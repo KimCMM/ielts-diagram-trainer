@@ -352,7 +352,7 @@ const band6ProcessCorrectionTasks = {
   ],
 };
 
-const reflectionOptions = [
+const sentenceUpgradeReflectionOptions = [
   ["relativeClause", 'Use a relative clause, such as "which..." or "where...".', true],
   ["purposePhrase", 'Use a purpose phrase, such as "in order to...".', true],
   ["participleResult", 'Use ", doing sth" to show the result of an action.', true],
@@ -1297,7 +1297,7 @@ export default function IELTSProcessTrainerFullSystem() {
   }, [level, practice1Tasks]);
 
   const p1ReflectionOptions = useMemo(
-    () => (level === "band65" ? shuffleArray(reflectionOptions) : []),
+    () => (level === "band65" ? shuffleArray(sentenceUpgradeReflectionOptions) : []),
     [level, processKey],
   );
 
@@ -1311,7 +1311,7 @@ export default function IELTSProcessTrainerFullSystem() {
       const reflectionCorrect =
         level !== "band65" ||
         (practiceState.p1ReflectionChecked &&
-          reflectionOptions.every((option) => {
+          sentenceUpgradeReflectionOptions.every((option) => {
             const selected = Boolean(practiceState.p1ReflectionAnswers[option.id]);
             return selected === option.correct;
           }));
@@ -1362,7 +1362,7 @@ export default function IELTSProcessTrainerFullSystem() {
 
   const checkP1Reflection = useCallback(() => {
     const feedback = {};
-    reflectionOptions.forEach((option) => {
+    sentenceUpgradeReflectionOptions.forEach((option) => {
       feedback[option.id] = Boolean(practiceState.p1ReflectionAnswers[option.id]) === option.correct;
     });
     const reflectionCorrect = Object.values(feedback).every(Boolean);
@@ -2029,7 +2029,7 @@ export default function IELTSProcessTrainerFullSystem() {
             {practiceState.p1ReflectionChecked && (
               <div
                 className={`mt-3 rounded-xl p-3 text-sm ${
-                  reflectionOptions.every((option) => {
+                  sentenceUpgradeReflectionOptions.every((option) => {
                     const selected = Boolean(
                       practiceState.p1ReflectionAnswers?.[option.id],
                     );
@@ -2039,7 +2039,7 @@ export default function IELTSProcessTrainerFullSystem() {
                     : "bg-red-50 text-red-700"
                 }`}
               >
-                {reflectionOptions.every((option) => {
+                {sentenceUpgradeReflectionOptions.every((option) => {
                   const selected = Boolean(
                     practiceState.p1ReflectionAnswers?.[option.id],
                   );
