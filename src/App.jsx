@@ -298,6 +298,344 @@ Object.keys(linkerJudgementTasks).forEach((key) => {
   }));
 });
 
+const p2Band6Tasks = {
+  bamboo: [
+    {
+      type: "fill",
+      sentence: "In the i______ stage, bamboo plants are planted in spring.",
+      answer: "initial",
+    },
+    {
+      type: "fill",
+      sentence: "Bamboo plants are t______ harvested in autumn.",
+      answer: "then",
+    },
+    {
+      type: "fill",
+      sentence: "A______ that, bamboo plants are cut into strips.",
+      answer: "After",
+    },
+    {
+      type: "fill",
+      sentence: "The f______ stage is to crush the strips to make liquid pulp.",
+      answer: "following",
+    },
+    {
+      type: "fill",
+      sentence:
+        "A__________, long fibres are separated from the liquid by a filter.",
+      answer: "Afterwards",
+    },
+    {
+      type: "fill",
+      sentence:
+        "S__________, water and amine oxide are added to soften the fibres.",
+      answer: "Subsequently",
+    },
+    {
+      type: "choice",
+      prompt: "Which pronoun should replace 'Bamboo plants'?",
+      parts: [
+        "Bamboo plants are planted in spring.",
+        "Bamboo plants are harvested in autumn.",
+      ],
+      options: ["it", "they", "them"],
+      answer: "they",
+    },
+    {
+      type: "choice",
+      prompt: "Can these two steps be combined using 'after being done'?",
+      parts: [
+        "The strips are crushed to make liquid pulp.",
+        "Long fibres are separated from the liquid by a filter.",
+      ],
+      options: [
+        "Yes, because the subject is the same.",
+        "No, because the subject changes from strips to long fibres.",
+      ],
+      answer: "No, because the subject changes from strips to long fibres.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'and then'. Use a pronoun to avoid repetition.",
+      parts: [
+        "Bamboo plants are harvested in autumn.",
+        "Bamboo plants are cut into strips.",
+      ],
+      answer:
+        "Bamboo plants are harvested in autumn, and then they are cut into strips.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: ["The fibres are softened.", "The fibres are spun to make yarn."],
+      answer: "The fibres are softened before being spun to make yarn.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after being done'.",
+      parts: [
+        "Yarn is woven into fabric.",
+        "The fabric is used to make clothes.",
+      ],
+      answer:
+        "The fabric is used to make clothes after being woven from yarn.",
+    },
+  ],
+  sugar: [
+    {
+      type: "fill",
+      sentence:
+        "In the i______ stage, sugar canes are grown for 12-18 months.",
+      answer: "initial",
+    },
+    {
+      type: "fill",
+      sentence:
+        "The sugar canes are t______ harvested by workers or machines.",
+      answer: "then",
+    },
+    {
+      type: "fill",
+      sentence: "A______ that, the sugar canes are crushed to make juice.",
+      answer: "After",
+    },
+    {
+      type: "fill",
+      sentence:
+        "A__________, the juice is purified by a limestone filter.",
+      answer: "Afterwards",
+    },
+    {
+      type: "fill",
+      sentence:
+        "In the n______ stage, the juice is turned into syrup by an evaporator.",
+      answer: "next",
+    },
+    {
+      type: "fill",
+      sentence:
+        "The f______ stage is to separate sugar crystals from the syrup by a centrifuge.",
+      answer: "following",
+    },
+    {
+      type: "choice",
+      prompt: "Which pronoun should replace 'Sugar canes'?",
+      parts: [
+        "Sugar canes are grown for 12-18 months.",
+        "Sugar canes are harvested by workers or machines.",
+      ],
+      options: ["it", "they", "them"],
+      answer: "they",
+    },
+    {
+      type: "choice",
+      prompt:
+        "Complete the sentence with 'before being' or 'after being'. Do not change the sentence order.",
+      parts: [
+        "Sugar canes are grown for 12-18 months _____ harvested by workers or machines.",
+      ],
+      options: ["before being", "after being"],
+      answer: "before being",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'and then'. Use a pronoun to avoid repetition.",
+      parts: [
+        "Sugar canes are harvested by workers or machines.",
+        "Sugar canes are crushed to make juice.",
+      ],
+      answer:
+        "Sugar canes are harvested by workers or machines, and then they are crushed to make juice.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: [
+        "The juice is purified by a limestone filter.",
+        "The juice is turned into syrup by an evaporator.",
+      ],
+      answer:
+        "The juice is purified by a limestone filter before being turned into syrup by an evaporator.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after being done'.",
+      parts: [
+        "Sugar crystals are separated from the syrup by a centrifuge.",
+        "Sugar crystals are dried and cooled by a machine.",
+      ],
+      answer:
+        "Sugar crystals are dried and cooled by a machine after being separated from the syrup by a centrifuge.",
+    },
+  ],
+  noodles: [
+    {
+      type: "fill",
+      sentence:
+        "In the i______ stage, flour is transported from storage silos by truck.",
+      answer: "initial",
+    },
+    {
+      type: "fill",
+      sentence: "Flour is t______ mixed with water and oil in a mixer.",
+      answer: "then",
+    },
+    {
+      type: "fill",
+      sentence: "N______, the dough is pressed into sheets by rollers.",
+      answer: "Next",
+    },
+    {
+      type: "fill",
+      sentence: "A______ that, the dough sheets are cut into strips.",
+      answer: "After",
+    },
+    {
+      type: "fill",
+      sentence:
+        "The f______ stage is to make the dough strips into noodle discs.",
+      answer: "following",
+    },
+    {
+      type: "fill",
+      sentence: "S__________, the noodle discs are cooked in oil and dried.",
+      answer: "Subsequently",
+    },
+    {
+      type: "choice",
+      prompt: "Which pronoun should replace 'The cups'?",
+      parts: ["The cups are labelled.", "The cups are sealed."],
+      options: ["it", "they", "them"],
+      answer: "they",
+    },
+    {
+      type: "choice",
+      prompt: "Can these two steps be combined using 'after being done'?",
+      parts: [
+        "The dough sheets are cut into strips.",
+        "The dough strips are made into noodle discs.",
+      ],
+      options: [
+        "Yes, because the subject is exactly the same.",
+        "No, because the subject changes from dough sheets to dough strips.",
+      ],
+      answer:
+        "No, because the subject changes from dough sheets to dough strips.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'and then'. Use a pronoun to avoid repetition.",
+      parts: [
+        "Flour is transported from storage silos by truck.",
+        "Flour is mixed with water and oil in a mixer.",
+      ],
+      answer:
+        "Flour is transported from storage silos by truck, and then it is mixed with water and oil in a mixer.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after being done'.",
+      parts: [
+        "Flour is transported from storage silos by truck.",
+        "Flour is mixed with water and oil in a mixer.",
+      ],
+      answer:
+        "Flour is mixed with water and oil in a mixer after being transported from storage silos by truck.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: [
+        "The noodle discs are cooked in oil.",
+        "The noodle discs are dried.",
+      ],
+      answer: "The noodle discs are cooked in oil before being dried.",
+    },
+  ],
+  recycling: [
+    {
+      type: "fill",
+      sentence: "F______, plastic bottles are placed in recycling bins.",
+      answer: "First",
+    },
+    {
+      type: "fill",
+      sentence:
+        "A______ that, plastic bottles are collected and transported by truck.",
+      answer: "After",
+    },
+    {
+      type: "fill",
+      sentence:
+        "The f______ stage is to sort the plastic bottles in a recycling centre.",
+      answer: "following",
+    },
+    {
+      type: "fill",
+      sentence: "N______, plastic bottles are compressed into blocks.",
+      answer: "Next",
+    },
+    {
+      type: "fill",
+      sentence: "The blocks are t______ crushed and the pieces are washed.",
+      answer: "then",
+    },
+    {
+      type: "fill",
+      sentence: "In the n______ stage, plastic pellets are produced.",
+      answer: "next",
+    },
+    {
+      type: "choice",
+      prompt: "Which pronoun should replace 'The blocks'?",
+      parts: ["The blocks are crushed.", "The blocks are washed."],
+      options: ["it", "they", "them"],
+      answer: "they",
+    },
+    {
+      type: "choice",
+      prompt:
+        "Complete the sentence with 'before being' or 'after being'. Do not change the sentence order.",
+      parts: [
+        "Plastic bottles are sorted in a recycling centre _____ compressed into blocks.",
+      ],
+      options: ["before being", "after being"],
+      answer: "before being",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'and then'. Use a pronoun to avoid repetition.",
+      parts: [
+        "Plastic bottles are placed in recycling bins.",
+        "Plastic bottles are collected and transported by truck.",
+      ],
+      answer:
+        "Plastic bottles are placed in recycling bins, and then they are collected and transported by truck.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: [
+        "Plastic pellets are produced.",
+        "Plastic pellets are heated to form raw material.",
+      ],
+      answer:
+        "Plastic pellets are produced before being heated to form raw material.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after being done'.",
+      parts: [
+        "The raw material is packed.",
+        "The raw material is used to produce end products.",
+      ],
+      answer:
+        "The raw material is used to produce end products after being packed.",
+    },
+  ],
+};
+
 const p2Band65Tasks = {
   bamboo: [
     {
@@ -629,6 +967,7 @@ const p2Band65Tasks = {
 };
 
 Object.entries(processData).forEach(([key, item]) => {
+  item.p2Band6 = p2Band6Tasks[key];
   item.p2Band65 = p2Band65Tasks[key];
 });
 
@@ -843,7 +1182,7 @@ export default function IELTSProcessTrainerFullSystem() {
   }, [award, practiceState.p2LinkerJudgementAnswers, practiceState.p2ParagraphFeedback, processKey]);
 
   const getCohesionTasks = useCallback(() => {
-    return level === "band6" ? makeCohesionTasks(current).band6 : current.p2Band65;
+    return level === "band6" ? current.p2Band6 : current.p2Band65;
   }, [level, current]);
 
   const cohesionTasks = useMemo(() => getCohesionTasks(), [getCohesionTasks]);
@@ -907,6 +1246,73 @@ export default function IELTSProcessTrainerFullSystem() {
       const tasks = getCohesionTasks();
       const task = tasks[index];
       if (!task) return;
+
+      if (level === "band6") {
+        if (task.type === "fill") {
+          setP2Hint({
+            index,
+            text:
+              "Use the first letter, capitalisation and sentence position. For example, 't______' after a be-verb usually means 'then', while 'A______ that' means 'After that'.",
+          });
+          return;
+        }
+
+        if (task.type === "choice") {
+          const prompt = task.prompt || "";
+
+          if (prompt.includes("pronoun")) {
+            setP2Hint({
+              index,
+              text:
+                "Check whether the noun is singular or plural. Use 'it' for one thing, 'they' for plural subjects, and 'them' for plural objects.",
+            });
+          } else if (prompt.includes("before") || prompt.includes("after")) {
+            setP2Hint({
+              index,
+              text:
+                "Keep the sentence order unchanged. Choose 'before being' or 'after being' according to which action happens first.",
+            });
+          } else {
+            setP2Hint({
+              index,
+              text:
+                "Check the relationship between the two steps: subject reference, step order and whether the same item continues through both actions.",
+            });
+          }
+
+          return;
+        }
+
+        const prompt = task.prompt || "";
+
+        if (prompt.includes("and then")) {
+          setP2Hint({
+            index,
+            text:
+              "Join the two actions with ', and then'. Replace the repeated noun with 'it', 'they' or 'them'.",
+          });
+        } else if (prompt.includes("before being")) {
+          setP2Hint({
+            index,
+            text:
+              "Use 'before being + past participle' when the first action happens earlier and the same item continues to the next step.",
+          });
+        } else if (prompt.includes("after being")) {
+          setP2Hint({
+            index,
+            text:
+              "Put the later action in the main clause, then use 'after being + past participle' to show the earlier action.",
+          });
+        } else {
+          setP2Hint({
+            index,
+            text:
+              "Check whether the same subject continues. If it does, you can combine the steps with 'and then', 'before being' or 'after being'.",
+          });
+        }
+
+        return;
+      }
 
       if (level === "band65") {
         if (task.type === "correction") {
