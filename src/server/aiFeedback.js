@@ -1,3 +1,7 @@
+import https from "node:https";
+import net from "node:net";
+import tls from "node:tls";
+
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const DEFAULT_MODEL = "gpt-4.1-mini";
 
@@ -55,28 +59,35 @@ export async function handleAiFeedbackRequest(body = {}) {
   }
 
   const model = process.env.OPENAI_MODEL || DEFAULT_MODEL;
-  const response = await fetch(OPENAI_RESPONSES_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      instructions: buildSystemInstruction(),
-      input: buildUserPrompt({
-        writing,
-        processKey,
-        level,
-        instruction: body.instruction,
-      }),
-      max_output_tokens: 900,
+  let response;
+  const requestBody = JSON.stringify({
+    model,
+    instructions: buildSystemInstruction(),
+    input: buildUserPrompt({
+      writing,
+      processKey,
+      level,
+      instruction: body.instruction,
     }),
+    max_output_tokens: 900,
   });
 
-  const data = await response.json().catch(() => null);
+  try {
+    response = await requestOpenAI({
+      apiKey,
+      body: requestBody,
+      proxyUrl: process.env.OPENAI_PROXY_URL,
+    });
+  } catch (error) {
+    throw new ApiError(
+      "ChatGPT connection failed. Please check the network connection, VPN/proxy settings, or OpenAI API access, then try again.",
+      503,
+    );
+  }
 
-  if (!response.ok) {
+  const data = await parseOpenAIResponseJson(response);
+
+  if (response.status < 200 || response.status >= 300) {
     const message =
       data?.error?.message || data?.message || "OpenAI language check failed.";
     throw new ApiError(message, response.status);
@@ -91,6 +102,122 @@ export async function handleAiFeedbackRequest(body = {}) {
     source: "chatgpt",
     model,
   };
+}
+
+async function requestOpenAI({ apiKey, body, proxyUrl }) {
+  const url = new URL(OPENAI_RESPONSES_URL);
+  const headers = {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(body),
+  };
+
+  if (proxyUrl) {
+    return requestViaProxy({ url, headers, body, proxyUrl });
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    body,
+  });
+
+  return {
+    status: response.status,
+    body: await response.text(),
+  };
+}
+
+function requestViaProxy({ url, headers, body, proxyUrl }) {
+  const agent = new HttpsProxyAgent(proxyUrl);
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        method: "POST",
+        hostname: url.hostname,
+        port: 443,
+        path: `${url.pathname}${url.search}`,
+        headers,
+        agent,
+        timeout: 30000,
+      },
+      (res) => {
+        const chunks = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () =>
+          resolve({
+            status: res.statusCode || 500,
+            body: Buffer.concat(chunks).toString("utf8"),
+          }),
+        );
+      },
+    );
+
+    req.on("error", reject);
+    req.on("timeout", () => req.destroy(new Error("OpenAI request timed out.")));
+    req.end(body);
+  });
+}
+
+async function parseOpenAIResponseJson(response) {
+  try {
+    return JSON.parse(response.body);
+  } catch (error) {
+    return null;
+  }
+}
+
+class HttpsProxyAgent extends https.Agent {
+  constructor(proxyUrl) {
+    super();
+    this.proxy = new URL(proxyUrl);
+  }
+
+  createConnection(options, callback) {
+    const proxySocket = net.connect(
+      Number(this.proxy.port || 80),
+      this.proxy.hostname,
+    );
+
+    proxySocket.once("connect", () => {
+      proxySocket.write(
+        [
+          `CONNECT ${options.host}:${options.port || 443} HTTP/1.1`,
+          `Host: ${options.host}:${options.port || 443}`,
+          "Connection: close",
+          "",
+          "",
+        ].join("\r\n"),
+      );
+    });
+
+    let response = "";
+
+    proxySocket.on("data", (chunk) => {
+      response += chunk.toString("utf8");
+
+      if (!response.includes("\r\n\r\n")) return;
+
+      if (!/^HTTP\/1\.[01] 2\d\d/i.test(response)) {
+        callback(new Error("Proxy CONNECT failed."));
+        proxySocket.destroy();
+        return;
+      }
+
+      proxySocket.removeAllListeners("data");
+
+      const secureSocket = tls.connect({
+        socket: proxySocket,
+        servername: options.host,
+      });
+
+      secureSocket.once("secureConnect", () => callback(null, secureSocket));
+      secureSocket.once("error", callback);
+    });
+
+    proxySocket.once("error", callback);
+  }
 }
 
 function buildSystemInstruction() {

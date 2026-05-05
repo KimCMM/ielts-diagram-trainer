@@ -1883,25 +1883,43 @@ export default function IELTSProcessTrainerFullSystem() {
             model: data.model,
           });
         } else {
-          errors = runLocalAICheck();
+          const data = await response.json().catch(() => ({}));
+          const message =
+            data.error && data.error !== "fetch failed"
+              ? data.error
+              : "ChatGPT connection failed. Please check the network connection, VPN/proxy settings, or OpenAI API access, then try again.";
           setAiFeedback({
             checkedAt: new Date().toISOString(),
-            errors,
-            source: "local-rules",
+            errors: [
+              {
+                id: "ai-check-unavailable",
+                type: "system",
+                message,
+                examples: [],
+              },
+            ],
+            source: "chatgpt",
           });
         }
       } catch (error) {
-        errors = runLocalAICheck();
         setAiFeedback({
           checkedAt: new Date().toISOString(),
-          errors,
-          source: "local-rules",
+          errors: [
+            {
+              id: "ai-check-unavailable",
+              type: "system",
+              message:
+                "AI Check could not connect to ChatGPT. Please check the API key, network connection or proxy settings, then try again.",
+              examples: [],
+            },
+          ],
+          source: "chatgpt",
         });
       }
     } finally {
       setAiLoading(false);
     }
-  }, [level, practiceState.p3Writing, processKey, runLocalAICheck, selfCheckComplete]);
+  }, [level, practiceState.p3Writing, processKey, selfCheckComplete]);
 
   const showSelfCheck = useCallback(() => {
     if (!practiceState.p3Writing.trim()) {
