@@ -218,19 +218,19 @@ const band55PassiveCorrectionTasks = {
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "Bamboo plants are harvest in autumn.",
+      prompt: "Bamboo plants were harvested in autumn.",
       answer: "Bamboo plants are harvested in autumn.",
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "The strips is crushed to make liquid pulp.",
-      answer: "The strips are crushed to make liquid pulp.",
+      prompt: "Bamboo plants is cut to make narrow strips.",
+      answer: "Bamboo plants are cut to make narrow strips.",
       instruction: "Correct the passive sentence.",
     },
   ],
   sugar: [
     {
-      prompt: "Sugar canes are grow for 12-18 months.",
+      prompt: "Sugar canes is grown for 12-18 months.",
       answer: "Sugar canes are grown for 12-18 months.",
       instruction: "Correct the passive sentence.",
     },
@@ -240,42 +240,42 @@ const band55PassiveCorrectionTasks = {
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "Sugar crystals is separated from the syrup by a centrifuge.",
-      answer: "Sugar crystals are separated from the syrup by a centrifuge.",
+      prompt: "The sugar canes were crushed to make juice.",
+      answer: "The sugar canes are crushed to make juice.",
       instruction: "Correct the passive sentence.",
     },
   ],
   noodles: [
     {
-      prompt: "Flour transported from storage silos by truck.",
-      answer: "Flour is transported from storage silos by truck.",
+      prompt: "Flour mixed with water and oil in a mixer.",
+      answer: "Flour is mixed with water and oil in a mixer.",
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "The dough sheets is cut into strips.",
-      answer: "The dough sheets are cut into strips.",
+      prompt: "The dough is press into sheets by rollers.",
+      answer: "The dough is pressed into sheets by rollers.",
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "The noodle discs are cook in oil and dried.",
-      answer: "The noodle discs are cooked in oil and dried.",
+      prompt: "Water and oil was mixed with flour in a mixer.",
+      answer: "Water and oil are mixed with flour in a mixer.",
       instruction: "Correct the passive sentence.",
     },
   ],
   recycling: [
     {
-      prompt: "Plastic pellets is produced.",
-      answer: "Plastic pellets are produced.",
+      prompt: "Plastic bottles were placed in recycling bins.",
+      answer: "Plastic bottles are placed in recycling bins.",
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "Plastic bottles are collect and transported by truck.",
-      answer: "Plastic bottles are collected and transported by truck.",
+      prompt: "Plastic bottles are place in recycling bins.",
+      answer: "Plastic bottles are placed in recycling bins.",
       instruction: "Correct the passive sentence.",
     },
     {
-      prompt: "End products produced.",
-      answer: "End products are produced.",
+      prompt: "Plastic bottles is sorted in a recycling centre.",
+      answer: "Plastic bottles are sorted in a recycling centre.",
       instruction: "Correct the passive sentence.",
     },
   ],
@@ -284,35 +284,35 @@ const band55PassiveCorrectionTasks = {
 const band6ProcessCorrectionTasks = {
   bamboo: [
     {
-      prompt: "Bamboo plants are harvest in autumn.",
-      answer: "Bamboo plants are harvested in autumn.",
+      prompt: "Bamboo plants are cutted to make narrow strips.",
+      answer: "Bamboo plants are cut to make narrow strips.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "The strips is crushed to make liquid pulp.",
-      answer: "The strips are crushed to make liquid pulp.",
+      prompt: "Bamboo plants are harvested in autumn by worker.",
+      answer: "Bamboo plants are harvested by workers in autumn.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "Water and amine oxide are added soften the fibres.",
-      answer: "Water and amine oxide are added to soften the fibres.",
+      prompt: "The plants are cut and crushing to make narrow strips.",
+      answer: "The plants are cut and crushed to make narrow strips.",
       instruction: "Correct the process sentence.",
     },
   ],
   sugar: [
     {
-      prompt: "Sugar canes are grow for 12-18 months.",
+      prompt: "Sugar canes are grown for 12-18 month.",
       answer: "Sugar canes are grown for 12-18 months.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "The juice are purified by a limestone filter.",
-      answer: "The juice is purified by a limestone filter.",
+      prompt: "The sugar canes are harvested by worker or machine.",
+      answer: "The sugar canes are harvested by workers or machines.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "The sugar is dried and cooling by a machine.",
-      answer: "The sugar is dried and cooled by a machine.",
+      prompt: "The sugar canes are crushed make juice.",
+      answer: "The sugar canes are crushed to make juice.",
       instruction: "Correct the process sentence.",
     },
   ],
@@ -323,30 +323,30 @@ const band6ProcessCorrectionTasks = {
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "Flour is mixed water and oil in a mixer.",
-      answer: "Flour is mixed with water and oil in a mixer.",
+      prompt: "Flour is mixed water and oil in a mixer to form dough.",
+      answer: "Flour is mixed with water and oil in a mixer to form dough.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "The noodle discs are cook in oil and dried.",
-      answer: "The noodle discs are cooked in oil and dried.",
+      prompt: "The dough is pressd by rollers to form sheets.",
+      answer: "The dough is pressed by rollers to form sheets.",
       instruction: "Correct the process sentence.",
     },
   ],
   recycling: [
     {
-      prompt: "Plastic pellets is produced.",
-      answer: "Plastic pellets are produced.",
+      prompt: "Plastic bottles are placed in recycling bin.",
+      answer: "Plastic bottles are placed in recycling bins.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "Plastic bottles are collect and transported by truck.",
+      prompt: "Plastic bottles are collected and transport by truck.",
       answer: "Plastic bottles are collected and transported by truck.",
       instruction: "Correct the process sentence.",
     },
     {
-      prompt: "The pieces are washed remove dirt.",
-      answer: "The pieces are washed to remove dirt.",
+      prompt: "Plastic bottle are sorted in a recycling centre.",
+      answer: "Plastic bottles are sorted in a recycling centre.",
       instruction: "Correct the process sentence.",
     },
   ],
@@ -1104,7 +1104,7 @@ export default function IELTSProcessTrainerFullSystem() {
   const [scoreMap, setScoreMap] = useLocalStorage("ielts-process-scores", {});
   const [practiceState, setPracticeState] = useState(initialPracticeState);
   const [dragItem, setDragItem] = useState(null);
-  const [p1Hint, setP1Hint] = useState("");
+  const [p1Hint, setP1Hint] = useState({ index: null, text: "" });
   const [p2Hint, setP2Hint] = useState({ index: null, text: "" });
   const [writingHint, setWritingHint] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -1163,7 +1163,7 @@ export default function IELTSProcessTrainerFullSystem() {
 
   const resetAllPracticeStates = useCallback(() => {
     setPracticeState(initialPracticeState);
-    setP1Hint("");
+    setP1Hint({ index: null, text: "" });
     setP2Hint({ index: null, text: "" });
     setWritingHint("");
     setAiFeedback(null);
@@ -1330,34 +1330,93 @@ export default function IELTSProcessTrainerFullSystem() {
   const getP1Hint = useCallback(
     (index) => {
       if (level === "band55") {
+        const hintMap = {
+          bamboo: [
+            "Check whether the sentence has the correct be-verb before the past participle.",
+            "Check the tense. A process description usually uses present simple passive, not past simple passive.",
+            "Check subject-verb agreement. Is the subject singular or plural?",
+          ],
+          sugar: [
+            "Check subject-verb agreement. Is the subject singular or plural?",
+            "Check whether the sentence has the correct be-verb before the past participle.",
+            "Check the tense. A process description usually uses present simple passive, not past simple passive.",
+          ],
+          noodles: [
+            "Check whether the sentence has the correct be-verb before the past participle.",
+            "Check the verb form after the be-verb. A passive sentence needs a past participle.",
+            "Check subject-verb agreement. Does the subject refer to one thing or more than one thing?",
+          ],
+          recycling: [
+            "Check the tense. A process description usually uses present simple passive, not past simple passive.",
+            "Check the verb form after the be-verb. A passive sentence needs a past participle.",
+            "Check subject-verb agreement. Is the subject singular or plural?",
+          ],
+        };
+
         if (index < 3) {
-          setP1Hint(
-            `Task ${index + 1}: Check the passive form carefully: subject + be + past participle. Also check subject-verb agreement.`,
-          );
+          setP1Hint({
+            index,
+            text:
+              hintMap[processKey]?.[index] ||
+              "Check present simple passive: subject + be-verb + past participle.",
+          });
         } else {
-          setP1Hint(
-            `Task ${index + 1}: Move the object to the subject position and use be + past participle. Keep useful details such as time, tools or materials.`,
-          );
+          setP1Hint({
+            index,
+            text:
+              "Rewrite the active sentence in the passive voice. First identify the object, then make it the new subject. Check the be-verb and past participle.",
+          });
         }
         return;
       }
 
       if (level === "band6") {
+        const hintMap = {
+          bamboo: [
+            "Check whether this verb has a regular or irregular past participle.",
+            "Check the position of the by-phrase and whether the noun after it should be singular or plural.",
+            "Check the two verbs after the be-verb. In a parallel passive structure, both verbs should use the same form.",
+          ],
+          sugar: [
+            "Check the countable noun after the number range.",
+            "Check whether the nouns after the by-phrase should be singular or plural.",
+            "Check whether the sentence has two verbs. If the second action shows purpose, think about the correct verb pattern.",
+          ],
+          noodles: [
+            "Check the transport expression after by. Is it describing a method of transport or one specific vehicle?",
+            "Check the verb pattern. Does this verb need a preposition before the materials?",
+            "Check the spelling of the past participle after the be-verb.",
+          ],
+          recycling: [
+            "Check the countable noun at the end of the sentence. Is one container meant, or more than one?",
+            "Check the second verb in the passive structure. After 'are collected and ...', should the second verb stay in base form?",
+            "Check the countable noun and subject-verb agreement. Does the subject refer to one bottle or many bottles?",
+          ],
+        };
+
         if (index < 3) {
-          setP1Hint(
-            `Task ${index + 1}: Check the passive form, subject-verb agreement, verb patterns and common prepositions such as by, with and to.`,
-          );
+          setP1Hint({
+            index,
+            text:
+              hintMap[processKey]?.[index] ||
+              "Check the process sentence carefully: verb form, noun form, by-phrase, and verb pattern.",
+          });
         } else {
-          setP1Hint(
-            `Task ${index + 1}: Use be + past participle. Add useful information from the keywords, such as time, tools, materials, results and prepositions.`,
-          );
+          setP1Hint({
+            index,
+            text:
+              "Use the keywords to write a complete passive sentence. Check the subject, be-verb, past participle, tools, materials and purpose phrase.",
+          });
         }
         return;
       }
 
-      setP1Hint(`Task ${index + 1}: ${practice1Tasks[index].instruction}`);
+      setP1Hint({
+        index,
+        text: `Task ${index + 1}: ${practice1Tasks[index].instruction}`,
+      });
     },
-    [level, practice1Tasks],
+    [level, processKey, practice1Tasks],
   );
 
   const checkP1Reflection = useCallback(() => {
@@ -1817,16 +1876,28 @@ export default function IELTSProcessTrainerFullSystem() {
         if (response.ok) {
           const data = await response.json();
           errors = Array.isArray(data.errors) ? data.errors : [];
+          setAiFeedback({
+            checkedAt: new Date().toISOString(),
+            errors,
+            source: data.source || "chatgpt",
+            model: data.model,
+          });
         } else {
           errors = runLocalAICheck();
+          setAiFeedback({
+            checkedAt: new Date().toISOString(),
+            errors,
+            source: "local-rules",
+          });
         }
       } catch (error) {
         errors = runLocalAICheck();
+        setAiFeedback({
+          checkedAt: new Date().toISOString(),
+          errors,
+          source: "local-rules",
+        });
       }
-      setAiFeedback({
-        checkedAt: new Date().toISOString(),
-        errors,
-      });
     } finally {
       setAiLoading(false);
     }
@@ -1850,7 +1921,7 @@ export default function IELTSProcessTrainerFullSystem() {
   const submitPractice3 = useCallback(() => {
     if (!aiHasNoErrors) {
       setWritingHint(
-        "Please revise your paragraph and run AI Check again. You can submit only when no language errors are detected.",
+        "Please revise your paragraph and run AI Check again. You can submit only when the current checker finds no issues, but final human review is still recommended.",
       );
       return;
     }
@@ -1949,6 +2020,11 @@ export default function IELTSProcessTrainerFullSystem() {
                           Hint
                         </button>
                       </div>
+                      {p1Hint.index === i && p1Hint.text && (
+                        <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+                          {p1Hint.text}
+                        </div>
+                      )}
                       {practiceState.p1Feedback[i] !== undefined && (
                         <div
                           className={`mt-3 rounded-xl p-3 text-sm ${
@@ -2055,11 +2131,6 @@ export default function IELTSProcessTrainerFullSystem() {
                 tasks correctly and pass this reflection check.
               </p>
             )}
-          </div>
-        )}
-        {p1Hint && (
-          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
-            {p1Hint}
           </div>
         )}
       </Card>
@@ -2497,11 +2568,14 @@ export default function IELTSProcessTrainerFullSystem() {
 
   const renderAIFeedback = () => {
     if (!aiChecked) return null;
+    const checkerName =
+      aiFeedback?.source === "chatgpt" ? "ChatGPT checker" : "local rule checker";
     if (aiErrors.length === 0) {
       return (
         <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
-          No language errors detected by AI. Complete the Final Reflection and
-          click Submit Practice 3 to earn 5 points.
+          No issues were found by the {checkerName}. This does not guarantee
+          that every vocabulary or grammar error has been caught. Complete the
+          Final Reflection and click Submit Practice 3 to earn 5 points.
         </div>
       );
     }
@@ -2509,8 +2583,9 @@ export default function IELTSProcessTrainerFullSystem() {
       <div className="mt-4 rounded-2xl border border-yellow-200 bg-yellow-50 p-4">
         <p className="font-bold text-yellow-900">AI Check Results</p>
         <p className="mt-1 text-sm text-yellow-800">
-          AI has found some language issues. Please revise your paragraph by
-          yourself, then run AI Check again. Corrections are not provided.
+          The {checkerName} has found some likely language issues. Please revise
+          your paragraph by yourself, then run the check again. Corrections are
+          not provided, and some errors may still need human review.
         </p>
         <div className="mt-3 space-y-2">
           {aiErrors.map((error, index) => (
