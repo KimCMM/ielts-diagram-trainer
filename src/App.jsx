@@ -204,7 +204,7 @@ const processData = {
   },
 };
 
-Object.values(processData).forEach((item) => {
+Object.entries(processData).forEach(([key, item]) => {
   item.steps = item.steps.map(([active, passive, prompt6]) => ({ active, passive, prompt6 }));
   item.band65 = item.band65.map(([prompt, task, answer]) => ({ prompt, task, answer }));
 });
@@ -296,6 +296,340 @@ Object.keys(linkerJudgementTasks).forEach((key) => {
     answer,
     hint,
   }));
+});
+
+const p2Band65Tasks = {
+  bamboo: [
+    {
+      type: "correction",
+      prompt: "Correct the 'Once ... has/have been done' error.",
+      sentence:
+        "Once the strips have crushed into liquid pulp, the pulp passes through a filter.",
+      answer:
+        "Once the strips have been crushed into liquid pulp, the pulp passes through a filter.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the cohesive device error.",
+      sentence:
+        "The fibres are softened with water and amine oxide, which they are spun into yarn.",
+      answer:
+        "The fibres are softened with water and amine oxide, after which they are spun into yarn.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the singular/plural reference error.",
+      sentence:
+        "Fibres are spun into yarn, which are then woven into bamboo fabric.",
+      answer:
+        "Fibres are spun into yarn, which is then woven into bamboo fabric.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the 'followed by' structure.",
+      sentence:
+        "The softened fibres are spun into yarn, followed by the yarn is woven into fabric.",
+      answer:
+        "The softened fibres are spun into yarn, followed by the weaving of this yarn into fabric.",
+    },
+    {
+      type: "combine",
+      prompt: "Use 'Once ... has/have been done, ...' to connect two steps.",
+      parts: [
+        "Bamboo is harvested manually in autumn.",
+        "It is mechanically cut into narrow strips.",
+      ],
+      answer:
+        "Once the bamboo has been harvested manually in autumn, it is mechanically cut into narrow strips.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: ["The fibres are softened.", "They are spun into yarn."],
+      answer: "The fibres are softened before being spun into yarn.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after which'.",
+      parts: [
+        "Bamboo is mechanically cut into narrow strips.",
+        "The strips are crushed into liquid pulp.",
+      ],
+      answer:
+        "Bamboo is mechanically cut into narrow strips, after which the strips are crushed into liquid pulp.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'which are then done'.",
+      parts: [
+        "Long fibres are extracted by a filter.",
+        "They are softened with water and amine oxide.",
+      ],
+      answer:
+        "Long fibres are extracted by a filter, which are then softened with water and amine oxide.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'followed by + noun phrase'.",
+      parts: [
+        "Bamboo plants are cultivated in spring.",
+        "The manual harvesting of bamboo in autumn.",
+      ],
+      answer:
+        "Bamboo plants are cultivated in spring, followed by the manual harvesting of bamboo in autumn.",
+    },
+  ],
+  sugar: [
+    {
+      type: "correction",
+      prompt: "Correct the 'Once ... has/have been done' error.",
+      sentence:
+        "Once the sugar canes has been harvested, they are crushed to produce juice.",
+      answer:
+        "Once the sugar canes have been harvested, they are crushed to produce juice.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the singular/plural reference error.",
+      sentence:
+        "The juice is turned into syrup, which are then placed in a centrifuge.",
+      answer:
+        "The juice is turned into syrup, which is then placed in a centrifuge.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the 'followed by' structure.",
+      sentence:
+        "The juice is turned into syrup, followed by sugar crystals are separated in a centrifuge.",
+      answer:
+        "The juice is turned into syrup, followed by the separation of sugar crystals in a centrifuge.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the 'after which' clause.",
+      sentence:
+        "The syrup is placed in a centrifuge, after which are separated sugar crystals.",
+      answer:
+        "The syrup is placed in a centrifuge, after which sugar crystals are separated.",
+    },
+    {
+      type: "combine",
+      prompt: "Use 'Once ... has/have been done, ...' to connect two steps.",
+      parts: [
+        "The sugar canes are grown for 12-18 months.",
+        "They are harvested by workers or machines.",
+      ],
+      answer:
+        "Once the sugar canes have been grown for 12-18 months, they are harvested by workers or machines.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: [
+        "The juice is purified by a limestone filter.",
+        "It is turned into syrup by an evaporator.",
+      ],
+      answer:
+        "The juice is purified by a limestone filter before being turned into syrup by an evaporator.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after which'.",
+      parts: [
+        "The sugar canes are crushed to produce juice.",
+        "The juice passes through a limestone filter.",
+      ],
+      answer:
+        "The sugar canes are crushed to produce juice, after which the juice passes through a limestone filter.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'which are then done'.",
+      parts: [
+        "Sugar crystals are separated from the syrup by a centrifuge.",
+        "The crystals are dried and cooled.",
+      ],
+      answer:
+        "Sugar crystals are separated from the syrup by a centrifuge, which are then dried and cooled.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'followed by + noun phrase'.",
+      parts: [
+        "Sugar canes are harvested by workers or machines.",
+        "The crushing of the sugar canes to produce juice.",
+      ],
+      answer:
+        "Sugar canes are harvested by workers or machines, followed by the crushing of the sugar canes to produce juice.",
+    },
+  ],
+  noodles: [
+    {
+      type: "correction",
+      prompt: "Correct the 'after which' clause.",
+      sentence: "The noodle discs are cooked in oil, after which are dried.",
+      answer:
+        "The noodle discs are cooked in oil, after which they are dried.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the relative clause.",
+      sentence:
+        "Flour is mixed with water and oil in a mixer, which dough is formed.",
+      answer:
+        "Flour is mixed with water and oil in a mixer, where dough is formed.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the singular/plural reference error.",
+      sentence:
+        "The dough is pressed into sheets, which is then cut into strips.",
+      answer:
+        "The dough is pressed into sheets, which are then cut into strips.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the 'followed by' structure.",
+      sentence:
+        "The dough sheets are cut into strips, followed by the strips are shaped into noodle discs.",
+      answer:
+        "The dough sheets are cut into strips, followed by the formation of these strips into noodle discs.",
+    },
+    {
+      type: "combine",
+      prompt: "Use 'Once ... has/have been done, ...' to connect two steps.",
+      parts: [
+        "Flour is transported from storage silos by truck.",
+        "It is mixed with water and oil in a mixer.",
+      ],
+      answer:
+        "Once the flour has been transported from storage silos by truck, it is mixed with water and oil in a mixer.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: ["The noodle discs are cooked in oil.", "They are dried."],
+      answer:
+        "The noodle discs are cooked in oil before being dried.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after which'.",
+      parts: [
+        "Flour is mixed with water and oil to form dough.",
+        "The dough is pressed into sheets by rollers.",
+      ],
+      answer:
+        "Flour is mixed with water and oil to form dough, after which the dough is pressed into sheets by rollers.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'which are then done'.",
+      parts: [
+        "The dough sheets are cut into strips.",
+        "The strips are shaped into noodle discs.",
+      ],
+      answer:
+        "The dough sheets are cut into strips, which are then shaped into noodle discs.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'followed by + noun phrase'.",
+      parts: [
+        "The noodle discs are dried.",
+        "The placing of the discs into cups with vegetables and spices.",
+      ],
+      answer:
+        "The noodle discs are dried, followed by the placing of the discs into cups with vegetables and spices.",
+    },
+  ],
+  recycling: [
+    {
+      type: "correction",
+      prompt: "Correct the 'Once ... has/have been done' error.",
+      sentence: "Once the blocks has been crushed, the pieces are washed.",
+      answer:
+        "Once the blocks have been crushed, the pieces are washed.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the subject-reference problem.",
+      sentence:
+        "Plastic bottles are compressed into blocks before being crushed and washed.",
+      answer:
+        "Plastic bottles are compressed into blocks, after which the blocks are crushed and the pieces are washed.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the 'after which' clause.",
+      sentence:
+        "Plastic pellets are produced, after which are heated to form raw material.",
+      answer:
+        "Plastic pellets are produced, after which they are heated to form raw material.",
+    },
+    {
+      type: "correction",
+      prompt: "Correct the singular/plural reference error.",
+      sentence:
+        "Plastic pellets are produced, which is then heated to form raw material.",
+      answer:
+        "Plastic pellets are produced, which are then heated to form raw material.",
+    },
+    {
+      type: "combine",
+      prompt: "Use 'Once ... has/have been done, ...' to connect two steps.",
+      parts: [
+        "Plastic bottles are collected and transported by truck.",
+        "They are sorted in a recycling centre.",
+      ],
+      answer:
+        "Once the plastic bottles have been collected and transported by truck, they are sorted in a recycling centre.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'before being done'.",
+      parts: [
+        "The raw material is packed.",
+        "It is used to produce end products.",
+      ],
+      answer:
+        "The raw material is packed before being used to produce end products.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'after which'.",
+      parts: [
+        "Plastic bottles are sorted in a recycling centre.",
+        "They are compressed into blocks.",
+      ],
+      answer:
+        "Plastic bottles are sorted in a recycling centre, after which they are compressed into blocks.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'which are then done'.",
+      parts: [
+        "The pieces are washed.",
+        "They are processed into plastic pellets.",
+      ],
+      answer:
+        "The pieces are washed, which are then processed into plastic pellets.",
+    },
+    {
+      type: "combine",
+      prompt: "Combine using 'followed by + noun phrase'.",
+      parts: [
+        "The pellets are heated to form raw material.",
+        "The packing of the raw material.",
+      ],
+      answer:
+        "The pellets are heated to form raw material, followed by the packing of the raw material.",
+    },
+  ],
+};
+
+Object.entries(processData).forEach(([key, item]) => {
+  item.p2Band65 = p2Band65Tasks[key];
 });
 
 const makeCohesionTasks = (current) => ({
@@ -508,21 +842,175 @@ export default function IELTSProcessTrainerFullSystem() {
     if (Object.values(feedback).every(Boolean) && practiceState.p2ParagraphFeedback.every(Boolean)) award("p2");
   }, [award, practiceState.p2LinkerJudgementAnswers, practiceState.p2ParagraphFeedback, processKey]);
 
-  const cohesionTasks = useMemo(() => {
-    const tasks = makeCohesionTasks(current);
-    return level === "band6" ? tasks.band6 : tasks.band65;
-  }, [current, level]);
+  const getCohesionTasks = useCallback(() => {
+    return level === "band6" ? makeCohesionTasks(current).band6 : current.p2Band65;
+  }, [level, current]);
+
+  const cohesionTasks = useMemo(() => getCohesionTasks(), [getCohesionTasks]);
+
+  const getPractice2Sections = useCallback(() => {
+    const tasks = getCohesionTasks();
+
+    if (level === "band65") {
+      return [
+        {
+          title: "Part A - Correct Cohesive Structure Errors",
+          description:
+            "Correct common errors in complex cohesive structures, such as 'Once ... has/have been done', 'after which', 'which is/are then done', 'where' clauses and 'followed by + noun phrase'.",
+          tasks: tasks.filter((task) => task.type === "correction"),
+        },
+        {
+          title: "Part B - Combine the Sentences",
+          description:
+            "Combine the sentence pairs using the target structures. Keep the meaning clear and make sure the grammar after each cohesive device is correct.",
+          tasks: tasks.filter((task) => task.type !== "correction"),
+        },
+      ];
+    }
+
+    return [
+      {
+        title: "Practice Tasks",
+        description:
+          level === "band6"
+            ? "Complete the cohesive devices, analyse sentence relationships and combine the sentence pairs."
+            : "",
+        tasks,
+      },
+    ];
+  }, [getCohesionTasks, level]);
 
   const checkCohesion = useCallback(
     (index) => {
-      const ok = isAnswerCorrect(practiceState.p2CohesionAnswers[index] || "", cohesionTasks[index].answer, level);
+      const tasks = getCohesionTasks();
+      const ok = isAnswerCorrect(practiceState.p2CohesionAnswers[index] || "", tasks[index].answer, level);
       setPracticeState((prev) => ({ ...prev, p2CohesionFeedback: { ...prev.p2CohesionFeedback, [index]: ok } }));
-      const allCorrect = cohesionTasks.every((task, i) =>
+      const allCorrect = tasks.every((task, i) =>
         isAnswerCorrect(practiceState.p2CohesionAnswers[i] || "", task.answer, level),
       );
       if (allCorrect) award("p2");
     },
-    [award, cohesionTasks, level, practiceState.p2CohesionAnswers],
+    [award, getCohesionTasks, level, practiceState.p2CohesionAnswers],
+  );
+
+  const getP2Hint = useCallback(
+    (index = null) => {
+      if (level === "band55") {
+        setP2Hint({
+          index: null,
+          text:
+            "Look at the position of the blank: sentence beginning, after a be-verb, after 'After', or inside 'In the ___ stage'.",
+        });
+        return;
+      }
+
+      const tasks = getCohesionTasks();
+      const task = tasks[index];
+      if (!task) return;
+
+      if (level === "band65") {
+        if (task.type === "correction") {
+          const sentence = task.sentence || "";
+          const prompt = task.prompt || "";
+
+          if (prompt.includes("Once")) {
+            setP2Hint({
+              index,
+              text:
+                "Use 'Once + subject + has/have been + past participle'. Check both 'has/have' and 'been'.",
+            });
+          } else if (prompt.includes("subject-reference")) {
+            setP2Hint({
+              index,
+              text:
+                "Check whether the subject before and after 'being' is the same. If the subject changes, use another structure such as 'after which'.",
+            });
+          } else if (prompt.includes("after which")) {
+            setP2Hint({
+              index,
+              text:
+                "After 'after which', use a complete clause with a clear subject, such as 'they are...' or 'the sheets are...'.",
+            });
+          } else if (prompt.includes("singular/plural")) {
+            setP2Hint({
+              index,
+              text:
+                "Check what 'which' refers to. Use 'which is' for one thing or an uncountable product, and 'which are' for plural things.",
+            });
+          } else if (prompt.includes("followed by")) {
+            setP2Hint({
+              index,
+              text:
+                "After 'followed by', use a noun phrase, such as 'the compression of...' or 'the weaving of...'. Do not use a full clause.",
+            });
+          } else if (
+            prompt.includes("relative clause") ||
+            sentence.includes("mixer")
+          ) {
+            setP2Hint({
+              index,
+              text:
+                "Use 'where' when you refer to a place, container or machine where an action happens. Use 'which' when you refer to a thing.",
+            });
+          } else {
+            setP2Hint({
+              index,
+              text:
+                "Check the cohesive structure carefully. Make sure the connector matches the grammar after it.",
+            });
+          }
+          return;
+        }
+
+        const prompt = task.prompt || "";
+
+        if (prompt.includes("Once")) {
+          setP2Hint({
+            index,
+            text:
+              "Use 'Once + subject + has/have been + past participle' to show that one step is completed before the next step starts.",
+          });
+        } else if (prompt.includes("before being")) {
+          setP2Hint({
+            index,
+            text:
+              "Use 'before being + past participle' when the same item goes through two actions in order.",
+          });
+        } else if (prompt.includes("after which")) {
+          setP2Hint({
+            index,
+            text:
+              "Use 'after which' when the next action happens after the whole previous step. After it, write a complete clause.",
+          });
+        } else if (prompt.includes("which is") || prompt.includes("which are")) {
+          setP2Hint({
+            index,
+            text:
+              "Use 'which is/are then + past participle' when the result of the first step becomes the thing processed in the next step. Check singular/plural carefully.",
+          });
+        } else if (prompt.includes("followed by")) {
+          setP2Hint({
+            index,
+            text:
+              "After 'followed by', use a noun phrase, such as 'the compression of...' or 'the packing of...'. Do not use a full clause.",
+          });
+        } else {
+          setP2Hint({
+            index,
+            text:
+              "Check subject reference, step order and the grammar required by the target cohesive structure.",
+          });
+        }
+        return;
+      }
+
+      setP2Hint({
+        index,
+        text:
+          "Check subject reference, step order and whether the same item continues through both actions.",
+      });
+    },
+    [getCohesionTasks, level],
   );
 
   const wordCount = useMemo(
@@ -755,51 +1243,155 @@ export default function IELTSProcessTrainerFullSystem() {
       );
     }
 
+    const tasks = getCohesionTasks();
+    const practice2Sections = getPractice2Sections();
+
     return (
-      <Card title="Practice 2 - Cohesive Devices">
-        <p className="mb-4 text-sm text-slate-600">Complete the cohesive-device tasks to earn 3 points.</p>
-        <div className="space-y-4">
-          {cohesionTasks.map((task, i) => (
-            <div key={i} className="rounded-xl border bg-slate-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Task {i + 1}</p>
-              <div className="mt-2 rounded-lg bg-white p-3">
-                <p className="font-semibold">{task.prompt || "Complete the sentence."}</p>
-                {task.sentence && <p className="mt-1">{task.sentence}</p>}
-                {task.sentence === undefined && task.parts?.map((part, index) => <p key={index} className="mt-1">{index + 1}. {part}</p>)}
-                {task.sentence === undefined && task.sentence !== "" && task.sentence !== null && task.sentence !== undefined ? null : null}
-                {task.type === "correction" && <p className="mt-2">{task.sentence}</p>}
+      <Card title="Practice 2 - COHESIVE DEVICES">
+        {level === "band6" && (
+          <p className="mb-4 text-sm text-slate-600">
+            Complete Practice 2 to earn 3 points. Complete the missing cohesive
+            devices, analyse sentence relationships and combine the sentence
+            pairs.
+          </p>
+        )}
+
+        {level === "band65" && (
+          <p className="mb-4 text-sm text-slate-600">
+            Complete Practice 2 to earn 3 points. Part A asks you to correct
+            common cohesive-structure errors. Part B asks you to combine
+            sentence pairs using target cohesive structures.
+          </p>
+        )}
+
+        <div className="space-y-6">
+          {practice2Sections.map((section) => (
+            <div key={section.title} className="rounded-2xl border bg-white p-4">
+              <div className="mb-4 rounded-xl bg-slate-50 p-3">
+                <p className="font-bold text-slate-800">{section.title}</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {section.description}
+                </p>
               </div>
-              {task.type === "choice" ? (
-                <div className="mt-3 space-y-2">
-                  {task.options.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => setPracticeState((prev) => ({ ...prev, p2CohesionAnswers: { ...prev.p2CohesionAnswers, [i]: option } }))}
-                      className={`block w-full rounded-xl border p-2 text-left text-sm ${practiceState.p2CohesionAnswers[i] === option ? "border-blue-500 bg-blue-50 text-blue-700" : "bg-white"}`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <input
-                  value={practiceState.p2CohesionAnswers[i] || ""}
-                  onChange={(e) => setPracticeState((prev) => ({ ...prev, p2CohesionAnswers: { ...prev.p2CohesionAnswers, [i]: e.target.value } }))}
-                  className="mt-3 w-full rounded-xl border p-2"
-                  placeholder="Write your answer here..."
-                />
-              )}
-              {p2Hint.index === i && p2Hint.text && <div className="mt-2 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">{p2Hint.text}</div>}
-              <div className="mt-3 flex gap-2">
-                <button type="button" onClick={() => checkCohesion(i)} className="rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white">Check</button>
-                <button type="button" onClick={() => setP2Hint({ index: i, text: "Check subject reference, step order and the grammar required by the target cohesive structure." })} className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold">Hint</button>
+
+              <div className="space-y-4">
+                {section.tasks.map((task) => {
+                  const i = tasks.indexOf(task);
+
+                  return (
+                    <div key={i} className="rounded-xl border bg-slate-50 p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Task {i + 1}
+                      </p>
+
+                      {task.type === "fill" ? (
+                        <p className="mt-2 rounded-lg bg-white p-3">
+                          {task.sentence}
+                        </p>
+                      ) : task.type === "choice" ? (
+                        <div className="mt-2 rounded-lg bg-white p-3">
+                          <p className="font-semibold">{task.prompt}</p>
+                          {task.parts?.map((part, index) => (
+                            <p key={index} className="mt-1">
+                              {task.parts.length > 1 ? `${index + 1}. ` : ""}
+                              {part}
+                            </p>
+                          ))}
+                          <div className="mt-3 space-y-2">
+                            {task.options.map((option) => (
+                              <button
+                                key={option}
+                                type="button"
+                                onClick={() =>
+                                  setPracticeState((prev) => ({
+                                    ...prev,
+                                    p2CohesionAnswers: {
+                                      ...prev.p2CohesionAnswers,
+                                      [i]: option,
+                                    },
+                                  }))
+                                }
+                                className={`block w-full rounded-xl border p-2 text-left text-sm ${
+                                  practiceState.p2CohesionAnswers[i] === option
+                                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                                    : "bg-white"
+                                }`}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : task.type === "correction" ? (
+                        <div className="mt-2 rounded-lg bg-white p-3">
+                          <p className="font-semibold">{task.prompt}</p>
+                          <p className="mt-2">{task.sentence}</p>
+                        </div>
+                      ) : (
+                        <div className="mt-2 rounded-lg bg-white p-3">
+                          <p className="font-semibold">{task.prompt}</p>
+                          <p>1. {task.parts[0]}</p>
+                          <p>2. {task.parts[1]}</p>
+                        </div>
+                      )}
+
+                      {p2Hint.index === i && p2Hint.text && (
+                        <div className="mt-2 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+                          {p2Hint.text}
+                        </div>
+                      )}
+
+                      {task.type !== "choice" && (
+                        <input
+                          value={practiceState.p2CohesionAnswers[i] || ""}
+                          onChange={(e) =>
+                            setPracticeState((prev) => ({
+                              ...prev,
+                              p2CohesionAnswers: {
+                                ...prev.p2CohesionAnswers,
+                                [i]: e.target.value,
+                              },
+                            }))
+                          }
+                          className="mt-3 w-full rounded-xl border p-2"
+                          placeholder="Write your answer here..."
+                        />
+                      )}
+
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => checkCohesion(i)}
+                          className="rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white"
+                        >
+                          Check
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => getP2Hint(i)}
+                          className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+                        >
+                          Hint
+                        </button>
+                      </div>
+
+                      {practiceState.p2CohesionFeedback[i] !== undefined && (
+                        <div
+                          className={`mt-3 rounded-xl p-3 text-sm ${
+                            practiceState.p2CohesionFeedback[i]
+                              ? "bg-green-50 text-green-700"
+                              : "bg-red-50 text-red-700"
+                          }`}
+                        >
+                          {practiceState.p2CohesionFeedback[i]
+                            ? "Correct."
+                            : `Suggested answer: ${task.answer}`}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              {practiceState.p2CohesionFeedback[i] !== undefined && (
-                <div className={`mt-3 rounded-xl p-3 text-sm ${practiceState.p2CohesionFeedback[i] ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-                  {practiceState.p2CohesionFeedback[i] ? "Correct." : `Suggested answer: ${task.answer}`}
-                </div>
-              )}
             </div>
           ))}
         </div>
