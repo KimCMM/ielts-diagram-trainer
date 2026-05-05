@@ -971,24 +971,6 @@ Object.entries(processData).forEach(([key, item]) => {
   item.p2Band65 = p2Band65Tasks[key];
 });
 
-const makeCohesionTasks = (current) => ({
-  band6: [
-    { type: "fill", sentence: "In the i______ stage, the first step is completed.", answer: "initial" },
-    { type: "fill", sentence: "The material is t______ processed in the next step.", answer: "then" },
-    { type: "fill", sentence: "A______ that, the following step takes place.", answer: "After" },
-    { type: "choice", prompt: "Which pronoun should replace a plural subject?", parts: ["Plastic bottles are collected.", "Plastic bottles are sorted."], options: ["it", "they", "them"], answer: "they" },
-    { type: "combine", prompt: "Combine using and then. Use a pronoun to avoid repetition.", parts: [current.steps[0].passive, current.steps[1].passive], answer: `${current.steps[0].passive.replace(/\.$/, "")}, and then they are processed in the next stage.` },
-    { type: "combine", prompt: "Combine using before being.", parts: [current.steps[1].passive, current.steps[2].passive], answer: `${current.steps[1].passive.replace(/\.$/, "")} before being processed further.` },
-  ],
-  band65: [
-    { type: "correction", prompt: "Correct the 'Once ... has/have been done' error.", sentence: "Once the materials has been processed, they move to the next stage.", answer: "Once the materials have been processed, they move to the next stage." },
-    { type: "correction", prompt: "Correct the 'after which' clause.", sentence: "The first stage is completed, after which are processed further.", answer: "The first stage is completed, after which the materials are processed further." },
-    { type: "correction", prompt: "Correct the 'followed by' structure.", sentence: "The material is processed, followed by it is packed.", answer: "The material is processed, followed by the packing of the material." },
-    { type: "combine", prompt: "Use 'Once ... has/have been done, ...' to connect two steps.", parts: [current.steps[0].passive, current.steps[1].passive], answer: `Once the first stage has been completed, ${current.steps[1].passive.charAt(0).toLowerCase()}${current.steps[1].passive.slice(1)}` },
-    { type: "combine", prompt: "Combine using 'after which'.", parts: [current.steps[1].passive, current.steps[2].passive], answer: `${current.steps[1].passive.replace(/\.$/, "")}, after which ${current.steps[2].passive.charAt(0).toLowerCase()}${current.steps[2].passive.slice(1)}` },
-  ],
-});
-
 const createErrorRules = () => [
   { id: "g1", type: "grammar", pattern: /\b(are|is)\s+(place|collect|sort|compress|harvest|spin|produce|pack|label|seal|crush|wash|dry|cool)\b(?!\w)/gi, message: "Use passive form: be + past participle, e.g. are placed / are collected." },
   { id: "g2", type: "grammar", pattern: /\b(fibres|bottles|pellets|crystals|plants)\s+is\b/gi, message: "Use a plural verb with plural nouns, e.g. fibres are / bottles are." },
