@@ -1111,9 +1111,39 @@ export default function IELTSProcessTrainerFullSystem() {
   const [aiFeedback, setAiFeedback] = useState(null);
   const [p3TimerStarted, setP3TimerStarted] = useState(false);
   const [p3ElapsedSeconds, setP3ElapsedSeconds] = useState(0);
-  const [selfCheckVisible, setSelfCheckVisible] = useState(false);
-  const [checklist, setChecklist] = useState({});
-  const [evidence, setEvidence] = useState({});
+  const suggestedWritingSeconds = 20 * 60;
+  const [band55SelfCheckVisible, setBand55SelfCheckVisible] = useState(false);
+  const [band55Checklist, setBand55Checklist] = useState({
+    passiveVoice: false,
+    cohesiveDevices: false,
+    correctOrder: false,
+  });
+  const [band55Evidence, setBand55Evidence] = useState({
+    passiveVoice: "",
+    cohesiveDevices: "",
+  });
+  const [band6SelfCheckVisible, setBand6SelfCheckVisible] = useState(false);
+  const [band6Checklist, setBand6Checklist] = useState({
+    cohesiveDevices: false,
+    pronouns: false,
+    structure: false,
+  });
+  const [band6Evidence, setBand6Evidence] = useState({
+    cohesiveDevices: "",
+    pronouns: "",
+    structure: "",
+  });
+  const [band65SelfCheckVisible, setBand65SelfCheckVisible] = useState(false);
+  const [band65Checklist, setBand65Checklist] = useState({
+    details: false,
+    complexStructure: false,
+    stageLogic: false,
+  });
+  const [band65Evidence, setBand65Evidence] = useState({
+    details: "",
+    practice1: "",
+    practice2: "",
+  });
 
   const current = processData[processKey];
   const currentBand55LinkerJudgementTasks =
@@ -1141,9 +1171,38 @@ export default function IELTSProcessTrainerFullSystem() {
     setDragItem(null);
     setP3TimerStarted(false);
     setP3ElapsedSeconds(0);
-    setSelfCheckVisible(false);
-    setChecklist({});
-    setEvidence({});
+    setBand55SelfCheckVisible(false);
+    setBand55Checklist({
+      passiveVoice: false,
+      cohesiveDevices: false,
+      correctOrder: false,
+    });
+    setBand55Evidence({
+      passiveVoice: "",
+      cohesiveDevices: "",
+    });
+    setBand6SelfCheckVisible(false);
+    setBand6Checklist({
+      cohesiveDevices: false,
+      pronouns: false,
+      structure: false,
+    });
+    setBand6Evidence({
+      cohesiveDevices: "",
+      pronouns: "",
+      structure: "",
+    });
+    setBand65SelfCheckVisible(false);
+    setBand65Checklist({
+      details: false,
+      complexStructure: false,
+      stageLogic: false,
+    });
+    setBand65Evidence({
+      details: "",
+      practice1: "",
+      practice2: "",
+    });
   }, []);
 
   const award = useCallback(
@@ -1634,11 +1693,62 @@ export default function IELTSProcessTrainerFullSystem() {
     [practiceState.p3Writing],
   );
 
+  const finalReflectionQuestions =
+    level === "band55"
+      ? [
+          "What passive voice pattern did you check or correct?",
+          "What cohesive device did you use to show the order clearly?",
+          "What will you check first next time?",
+        ]
+      : level === "band6"
+        ? [
+            "What sentence-combining structure did you use or improve?",
+            "What repeated noun did you replace with a pronoun?",
+            "What will you check first next time?",
+          ]
+        : [
+            "What sentence-upgrade expression did you use or improve?",
+            "What cohesive structure from Practice 2 did you use or improve?",
+            "What will you check first next time?",
+          ];
+
   const selfCheckComplete = useMemo(() => {
-    const checks = Object.values(checklist);
-    const examples = Object.values(evidence);
-    return checks.length >= 3 && checks.every(Boolean) && examples.length >= 2 && examples.every((item) => item.trim());
-  }, [checklist, evidence]);
+    if (level === "band55") {
+      return (
+        band55Checklist.passiveVoice &&
+        band55Checklist.cohesiveDevices &&
+        band55Checklist.correctOrder &&
+        band55Evidence.passiveVoice.trim().length > 0 &&
+        band55Evidence.cohesiveDevices.trim().length > 0
+      );
+    }
+    if (level === "band6") {
+      return (
+        band6Checklist.cohesiveDevices &&
+        band6Checklist.pronouns &&
+        band6Checklist.structure &&
+        band6Evidence.cohesiveDevices.trim().length > 0 &&
+        band6Evidence.pronouns.trim().length > 0 &&
+        band6Evidence.structure.trim().length > 0
+      );
+    }
+    return (
+      band65Checklist.details &&
+      band65Checklist.complexStructure &&
+      band65Checklist.stageLogic &&
+      band65Evidence.details.trim().length > 0 &&
+      band65Evidence.practice1.trim().length > 0 &&
+      band65Evidence.practice2.trim().length > 0
+    );
+  }, [
+    level,
+    band55Checklist,
+    band55Evidence,
+    band6Checklist,
+    band6Evidence,
+    band65Checklist,
+    band65Evidence,
+  ]);
 
   const aiChecked = Boolean(aiFeedback);
   const aiErrors = aiFeedback?.errors || [];
@@ -1648,13 +1758,31 @@ export default function IELTSProcessTrainerFullSystem() {
   const runLocalAICheck = useCallback(() => {
     const errors = [];
     createErrorRules(processKey).forEach((rule) => {
-      if (practiceState.p3Writing.match(rule.pattern)) errors.push(rule);
+      const matches = practiceState.p3Writing.match(rule.pattern);
+      if (matches?.length) {
+        errors.push({
+          id: rule.id,
+          type: rule.type,
+          message: rule.message,
+          examples: rule.examples || [],
+        });
+      }
     });
     if (wordCount < minWords) {
-      errors.push({ id: "task-word-count-low", type: "task", message: `Your paragraph is too short. Aim for at least ${minWords} words for this level.` });
+      errors.push({
+        id: "task-word-count-low",
+        type: "task",
+        message: `Your paragraph is too short. Aim for at least ${minWords} words for this level.`,
+        examples: [],
+      });
     }
     if (wordCount > maxWords + 20) {
-      errors.push({ id: "task-word-count-high", type: "task", message: `Your paragraph may be too long. Try to keep it close to ${minWords}-${maxWords} words.` });
+      errors.push({
+        id: "task-word-count-high",
+        type: "task",
+        message: `Your paragraph may be too long. Try to keep it close to ${minWords}-${maxWords} words.`,
+        examples: [],
+      });
     }
     return errors;
   }, [maxWords, minWords, practiceState.p3Writing, processKey, wordCount]);
@@ -1671,15 +1799,59 @@ export default function IELTSProcessTrainerFullSystem() {
     setWritingHint("");
     setAiLoading(true);
     try {
-      setAiFeedback({ checkedAt: new Date().toISOString(), errors: runLocalAICheck() });
+      let errors = [];
+      try {
+        const response = await fetch("/api/ai-feedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            processKey,
+            level,
+            writing: practiceState.p3Writing,
+            instruction:
+              "Only identify error categories and brief error labels. Do not rewrite the paragraph or provide corrected sentences.",
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          errors = Array.isArray(data.errors) ? data.errors : [];
+        } else {
+          errors = runLocalAICheck();
+        }
+      } catch (error) {
+        errors = runLocalAICheck();
+      }
+      setAiFeedback({
+        checkedAt: new Date().toISOString(),
+        errors,
+      });
     } finally {
       setAiLoading(false);
     }
-  }, [practiceState.p3Writing, runLocalAICheck, selfCheckComplete]);
+  }, [level, practiceState.p3Writing, processKey, runLocalAICheck, selfCheckComplete]);
+
+  const showSelfCheck = useCallback(() => {
+    if (!practiceState.p3Writing.trim()) {
+      setWritingHint("Please write your body paragraph first.");
+      return;
+    }
+    setWritingHint("");
+    if (level === "band55") {
+      setBand55SelfCheckVisible(true);
+    } else if (level === "band6") {
+      setBand6SelfCheckVisible(true);
+    } else {
+      setBand65SelfCheckVisible(true);
+    }
+  }, [level, practiceState.p3Writing]);
 
   const submitPractice3 = useCallback(() => {
     if (!aiHasNoErrors) {
-      setWritingHint("Please revise your paragraph and run AI Check again.");
+      setWritingHint(
+        "Please revise your paragraph and run AI Check again. You can submit only when no language errors are detected.",
+      );
       return;
     }
     if (!finalReflectionComplete) {
@@ -2323,114 +2495,433 @@ export default function IELTSProcessTrainerFullSystem() {
     );
   };
 
-  const selfCheckItems =
-    level === "band55"
-      ? ["I used present simple passive voice.", "I used cohesive devices to show order.", "I described the steps in the correct order."]
-      : level === "band6"
-        ? ["I used cohesive devices.", "I used pronouns to avoid repetition.", "I used one sentence-combining structure."]
-        : ["I included specific diagram details.", "I used one sentence-upgrade expression.", "I used one cohesive structure from Practice 2."];
+  const renderAIFeedback = () => {
+    if (!aiChecked) return null;
+    if (aiErrors.length === 0) {
+      return (
+        <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
+          No language errors detected by AI. Complete the Final Reflection and
+          click Submit Practice 3 to earn 5 points.
+        </div>
+      );
+    }
+    return (
+      <div className="mt-4 rounded-2xl border border-yellow-200 bg-yellow-50 p-4">
+        <p className="font-bold text-yellow-900">AI Check Results</p>
+        <p className="mt-1 text-sm text-yellow-800">
+          AI has found some language issues. Please revise your paragraph by
+          yourself, then run AI Check again. Corrections are not provided.
+        </p>
+        <div className="mt-3 space-y-2">
+          {aiErrors.map((error, index) => (
+            <div key={`${error.id}-${index}`} className="rounded-xl bg-white p-3">
+              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                {error.type || "language"}
+              </p>
+              <p className="mt-1 text-sm text-slate-800">{error.message}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
-  const renderPractice3 = () => (
-    <Card title="Practice 3 - Body Paragraph Writing">
-      <p className="mb-3 text-sm text-slate-600">Write your body paragraph, complete the self-checklist, pass AI Check, complete Final Reflection, and submit.</p>
-      <div className="rounded-2xl border bg-slate-50 p-4 text-sm text-slate-700">
-        <p className="font-semibold">Writing target</p>
-        <p className="mt-1">Write {minWords}-{maxWords} words within 20 minutes. You do not need to write the introduction or overview.</p>
-        <p className="mt-1">Timer: <span className={p3ElapsedSeconds > 1200 ? "font-bold text-red-600" : "font-bold text-slate-800"}>{formatTime(p3ElapsedSeconds)}</span> / 20:00</p>
-      </div>
-      <textarea
-        value={practiceState.p3Writing}
-        onChange={(e) => {
-          setPracticeState((prev) => ({ ...prev, p3Writing: e.target.value }));
-          if (!p3TimerStarted && e.target.value.trim()) setP3TimerStarted(true);
-          setAiFeedback(null);
-        }}
-        rows={10}
-        className="mt-4 w-full rounded-2xl border p-4"
-        placeholder="Write your body paragraph here..."
-      />
-      <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-        <span>Word count: <strong className={wordCount < minWords || wordCount > maxWords + 20 ? "text-red-600" : "text-green-700"}>{wordCount}</strong></span>
-        <span>Target: {minWords}-{maxWords} words</span>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" onClick={() => (practiceState.p3Writing.trim() ? setSelfCheckVisible(true) : setWritingHint("Please write your body paragraph first."))} className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Submit for Self-check</button>
-        <button type="button" onClick={getAIFeedback} disabled={aiLoading} className={`rounded-xl px-4 py-2 text-sm font-semibold text-white ${aiLoading ? "bg-slate-400" : "bg-green-600"}`}>{aiLoading ? "Checking..." : "AI Check"}</button>
-      </div>
-      {writingHint && <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">{writingHint}</div>}
-      {selfCheckVisible && (
-        <div className="mt-5 rounded-2xl border bg-white p-4">
-          <p className="font-semibold">Self-checklist</p>
-          <div className="mt-3 space-y-3">
-            {selfCheckItems.map((item, index) => (
-              <div key={item} className="space-y-2">
-                <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(checklist[index])}
-                    onChange={(e) => setChecklist((prev) => ({ ...prev, [index]: e.target.checked }))}
-                  />
-                  <span>{item}</span>
-                </label>
-                {index < 2 && (
-                  <input
-                    value={evidence[index] || ""}
-                    onChange={(e) => setEvidence((prev) => ({ ...prev, [index]: e.target.value }))}
-                    className="w-full rounded-xl border p-2 text-sm"
-                    placeholder="Copy one example from your paragraph."
-                  />
-                )}
-              </div>
-            ))}
-          </div>
+  const renderBand55SelfCheck = () => {
+    if (!band55SelfCheckVisible) return null;
+    return (
+      <div className="mt-5 rounded-2xl border bg-white p-4">
+        <p className="font-semibold">Self-checklist</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Tick each item and copy one example from your paragraph before AI Check.
+        </p>
+        <div className="mt-3 space-y-3">
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band55Checklist.passiveVoice}
+              onChange={(e) =>
+                setBand55Checklist((prev) => ({
+                  ...prev,
+                  passiveVoice: e.target.checked,
+                }))
+              }
+            />
+            <span>I used present simple passive voice to describe steps.</span>
+          </label>
+          <input
+            value={band55Evidence.passiveVoice}
+            onChange={(e) =>
+              setBand55Evidence((prev) => ({
+                ...prev,
+                passiveVoice: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one passive voice example from your paragraph."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band55Checklist.cohesiveDevices}
+              onChange={(e) =>
+                setBand55Checklist((prev) => ({
+                  ...prev,
+                  cohesiveDevices: e.target.checked,
+                }))
+              }
+            />
+            <span>I used basic cohesive devices to show the order clearly.</span>
+          </label>
+          <input
+            value={band55Evidence.cohesiveDevices}
+            onChange={(e) =>
+              setBand55Evidence((prev) => ({
+                ...prev,
+                cohesiveDevices: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one cohesive device from your paragraph."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band55Checklist.correctOrder}
+              onChange={(e) =>
+                setBand55Checklist((prev) => ({
+                  ...prev,
+                  correctOrder: e.target.checked,
+                }))
+              }
+            />
+            <span>I described the steps in the correct order.</span>
+          </label>
         </div>
-      )}
-      {aiChecked && (
-        <div className={`mt-4 rounded-2xl border p-4 text-sm ${aiErrors.length ? "border-yellow-200 bg-yellow-50 text-yellow-900" : "border-green-200 bg-green-50 text-green-700"}`}>
-          {aiErrors.length === 0 ? (
-            <p className="font-semibold">No language errors detected. Complete the Final Reflection and submit.</p>
-          ) : (
-            <>
-              <p className="font-bold">AI Check Results</p>
-              <div className="mt-3 space-y-2">
-                {aiErrors.map((error, index) => (
-                  <div key={`${error.id}-${index}`} className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{error.type}</p>
-                    <p className="mt-1 text-slate-800">{error.message}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+      </div>
+    );
+  };
+
+  const renderBand6SelfCheck = () => {
+    if (!band6SelfCheckVisible) return null;
+    return (
+      <div className="mt-5 rounded-2xl border bg-white p-4">
+        <p className="font-semibold">Self-checklist</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Tick each item and copy one example from your paragraph before AI Check.
+        </p>
+        <div className="mt-3 space-y-3">
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band6Checklist.cohesiveDevices}
+              onChange={(e) =>
+                setBand6Checklist((prev) => ({
+                  ...prev,
+                  cohesiveDevices: e.target.checked,
+                }))
+              }
+            />
+            <span>I used cohesive devices to connect neighbouring steps.</span>
+          </label>
+          <input
+            value={band6Evidence.cohesiveDevices}
+            onChange={(e) =>
+              setBand6Evidence((prev) => ({
+                ...prev,
+                cohesiveDevices: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one cohesive device from your paragraph."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band6Checklist.pronouns}
+              onChange={(e) =>
+                setBand6Checklist((prev) => ({
+                  ...prev,
+                  pronouns: e.target.checked,
+                }))
+              }
+            />
+            <span>I used a pronoun to avoid repeating the same noun.</span>
+          </label>
+          <input
+            value={band6Evidence.pronouns}
+            onChange={(e) =>
+              setBand6Evidence((prev) => ({
+                ...prev,
+                pronouns: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one pronoun example, such as it / they / them."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band6Checklist.structure}
+              onChange={(e) =>
+                setBand6Checklist((prev) => ({
+                  ...prev,
+                  structure: e.target.checked,
+                }))
+              }
+            />
+            <span>
+              I used at least one sentence-combining structure from Practice 2.
+            </span>
+          </label>
+          <input
+            value={band6Evidence.structure}
+            onChange={(e) =>
+              setBand6Evidence((prev) => ({
+                ...prev,
+                structure: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one combined sentence from your paragraph."
+          />
         </div>
-      )}
-      {aiHasNoErrors && (
-        <div className="mt-5 rounded-2xl border bg-white p-4">
-          <p className="font-semibold">Final Reflection</p>
-          <div className="mt-3 space-y-2">
-            {practiceState.p3Reflection.map((item, i) => (
-              <input
-                key={i}
-                value={item}
-                onChange={(e) =>
-                  setPracticeState((prev) => {
-                    const copy = [...prev.p3Reflection];
-                    copy[i] = e.target.value;
-                    return { ...prev, p3Reflection: copy };
-                  })
-                }
-                className="w-full rounded-xl border p-2"
-                placeholder={["What did you improve?", "What structure did you use?", "What will you check first next time?"][i]}
-              />
-            ))}
-          </div>
-          <button type="button" onClick={submitPractice3} disabled={earned.p3} className={`mt-4 rounded-xl px-4 py-2 text-sm font-semibold text-white ${earned.p3 ? "bg-slate-400" : "bg-green-600"}`}>
-            {earned.p3 ? "Submitted - +5 points earned" : "Submit Practice 3"}
+      </div>
+    );
+  };
+
+  const renderBand65SelfCheck = () => {
+    if (!band65SelfCheckVisible) return null;
+    return (
+      <div className="mt-5 rounded-2xl border bg-white p-4">
+        <p className="font-semibold">Self-checklist</p>
+        <p className="mt-1 text-sm text-slate-600">
+          Tick each item and copy one example from your paragraph before AI Check.
+        </p>
+        <div className="mt-3 space-y-3">
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band65Checklist.details}
+              onChange={(e) =>
+                setBand65Checklist((prev) => ({
+                  ...prev,
+                  details: e.target.checked,
+                }))
+              }
+            />
+            <span>
+              I included specific diagram details, such as tools, machines,
+              materials, locations or final examples.
+            </span>
+          </label>
+          <input
+            value={band65Evidence.details}
+            onChange={(e) =>
+              setBand65Evidence((prev) => ({
+                ...prev,
+                details: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one specific diagram detail from your paragraph."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band65Checklist.complexStructure}
+              onChange={(e) =>
+                setBand65Checklist((prev) => ({
+                  ...prev,
+                  complexStructure: e.target.checked,
+                }))
+              }
+            />
+            <span>
+              I used at least one sentence-upgrade expression from Practice 1.
+            </span>
+          </label>
+          <input
+            value={band65Evidence.practice1}
+            onChange={(e) =>
+              setBand65Evidence((prev) => ({
+                ...prev,
+                practice1: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one sentence-upgrade expression from your paragraph."
+          />
+          <label className="flex gap-2 rounded-xl border bg-slate-50 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={band65Checklist.stageLogic}
+              onChange={(e) =>
+                setBand65Checklist((prev) => ({
+                  ...prev,
+                  stageLogic: e.target.checked,
+                }))
+              }
+            />
+            <span>
+              I used at least one cohesive structure from Practice 2 and grouped
+              neighbouring steps logically.
+            </span>
+          </label>
+          <input
+            value={band65Evidence.practice2}
+            onChange={(e) =>
+              setBand65Evidence((prev) => ({
+                ...prev,
+                practice2: e.target.value,
+              }))
+            }
+            className="w-full rounded-xl border p-2 text-sm"
+            placeholder="Copy one cohesive structure from your paragraph."
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const renderPractice3 = () => {
+    return (
+      <Card title="Practice 3 - BODY PARAGRAPH WRITING">
+        <p className="mb-3 text-sm text-slate-600">
+          Practice 3 is worth 5 points. Write your body paragraph, complete the
+          self-checklist, pass AI Check, complete Final Reflection, and click
+          Submit Practice 3 to earn the points.
+        </p>
+        <div className="rounded-2xl border bg-slate-50 p-4 text-sm text-slate-700">
+          <p className="font-semibold">Writing target</p>
+          <p className="mt-1">
+            Write {minWords}-{maxWords} words within 20 minutes. Start from the
+            main process steps. You do not need to write the introduction or
+            overview in this practice.
+          </p>
+          <p className="mt-1">
+            Timer:{" "}
+            <span
+              className={
+                p3ElapsedSeconds > suggestedWritingSeconds
+                  ? "font-bold text-red-600"
+                  : "font-bold text-slate-800"
+              }
+            >
+              {formatTime(p3ElapsedSeconds)}
+            </span>{" "}
+            / 20:00
+          </p>
+        </div>
+        <textarea
+          value={practiceState.p3Writing}
+          onChange={(e) => {
+            const value = e.target.value;
+            setPracticeState((prev) => ({
+              ...prev,
+              p3Writing: value,
+              p3Submitted: false,
+            }));
+            if (!p3TimerStarted && value.trim().length > 0) {
+              setP3TimerStarted(true);
+            }
+            setAiFeedback(null);
+          }}
+          rows={10}
+          className="mt-4 w-full rounded-2xl border p-4"
+          placeholder="Write your body paragraph here..."
+        />
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-600">
+          <span>
+            Word count:{" "}
+            <strong
+              className={
+                wordCount < minWords || wordCount > maxWords + 20
+                  ? "text-red-600"
+                  : "text-green-700"
+              }
+            >
+              {wordCount}
+            </strong>
+          </span>
+          <span>
+            Target: {minWords}-{maxWords} words
+          </span>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={showSelfCheck}
+            className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Submit for Self-check
+          </button>
+          <button
+            type="button"
+            onClick={getAIFeedback}
+            disabled={aiLoading}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold text-white ${
+              aiLoading
+                ? "cursor-not-allowed bg-slate-400"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            {aiLoading ? "Checking..." : "AI Check"}
           </button>
         </div>
-      )}
-    </Card>
-  );
+        {writingHint && (
+          <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+            {writingHint}
+          </div>
+        )}
+        {level === "band55" && renderBand55SelfCheck()}
+        {level === "band6" && renderBand6SelfCheck()}
+        {level === "band65" && renderBand65SelfCheck()}
+        {renderAIFeedback()}
+        {aiHasNoErrors && (
+          <div className="mt-5 rounded-2xl border bg-white p-4">
+            <p className="font-semibold">Final Reflection</p>
+            <p className="mt-1 text-sm text-slate-600">
+              Complete the reflection after your paragraph has passed AI Check.
+              Focus on what you checked, revised or improved.
+            </p>
+            <div className="mt-3 space-y-2">
+              {practiceState.p3Reflection.map((item, i) => (
+                <input
+                  key={i}
+                  value={item}
+                  onChange={(e) =>
+                    setPracticeState((prev) => {
+                      const copy = [...prev.p3Reflection];
+                      copy[i] = e.target.value;
+                      return { ...prev, p3Reflection: copy };
+                    })
+                  }
+                  className="w-full rounded-xl border p-2"
+                  placeholder={finalReflectionQuestions[i]}
+                />
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <button
+                type="button"
+                onClick={submitPractice3}
+                disabled={earned.p3}
+                className={`rounded-xl px-4 py-2 text-sm font-semibold text-white ${
+                  earned.p3
+                    ? "cursor-not-allowed bg-slate-400"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
+              >
+                {earned.p3
+                  ? "Submitted - +5 points earned"
+                  : "Submit Practice 3"}
+              </button>
+            </div>
+          </div>
+        )}
+      </Card>
+    );
+  };
 
   return (
     <main className="min-h-screen bg-slate-50 p-4 text-slate-900 md:p-8">
