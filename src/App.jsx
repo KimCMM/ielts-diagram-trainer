@@ -2568,14 +2568,11 @@ export default function IELTSProcessTrainerFullSystem() {
 
   const renderAIFeedback = () => {
     if (!aiChecked) return null;
-    const checkerName =
-      aiFeedback?.source === "chatgpt" ? "ChatGPT checker" : "local rule checker";
     if (aiErrors.length === 0) {
       return (
         <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-700">
-          No issues were found by the {checkerName}. This does not guarantee
-          that every vocabulary or grammar error has been caught. Complete the
-          Final Reflection and click Submit Practice 3 to earn 5 points.
+          AI Check did not find any language issues. Complete the Final
+          Reflection and click Submit Practice 3 to earn 5 points.
         </div>
       );
     }
@@ -2583,9 +2580,9 @@ export default function IELTSProcessTrainerFullSystem() {
       <div className="mt-4 rounded-2xl border border-yellow-200 bg-yellow-50 p-4">
         <p className="font-bold text-yellow-900">AI Check Results</p>
         <p className="mt-1 text-sm text-yellow-800">
-          The {checkerName} has found some likely language issues. Please revise
-          your paragraph by yourself, then run the check again. Corrections are
-          not provided, and some errors may still need human review.
+          ChatGPT has found some likely language issues. Please revise your
+          paragraph by yourself, then run AI Check again. Corrections are not
+          provided.
         </p>
         <div className="mt-3 space-y-2">
           {aiErrors.map((error, index) => (
