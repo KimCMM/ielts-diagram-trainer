@@ -84,6 +84,7 @@ const initialPracticeState = {
   p2LinkerJudgementChecked: false,
   p2LinkerJudgementHint: null,
   p3Writing: "",
+  p3Submitted: false,
   p3Reflection: ["", "", ""],
 };
 
@@ -362,7 +363,7 @@ const reflectionOptions = [
   ["complicatedWords", "Use complicated words even if they do not fit the diagram.", false],
 ].map(([id, text, correct]) => ({ id, text, correct }));
 
-const linkerJudgementTasks = {
+const band55LinkerJudgementTasks = {
   bamboo: [
     ["bambooThenMiddle", "The fibres are then spun to make yarn.", true, "'Then' can be used in the middle of a passive sentence, usually after the be-verb."],
     ["bambooAfterThat", "After, bamboo plants are cut into strips.", false, "Use 'After that,' to connect the next step. Do not use 'After,' alone here."],
@@ -385,8 +386,8 @@ const linkerJudgementTasks = {
   ],
 };
 
-Object.keys(linkerJudgementTasks).forEach((key) => {
-  linkerJudgementTasks[key] = linkerJudgementTasks[key].map(([id, statement, answer, hint]) => ({
+Object.keys(band55LinkerJudgementTasks).forEach((key) => {
+  band55LinkerJudgementTasks[key] = band55LinkerJudgementTasks[key].map(([id, statement, answer, hint]) => ({
     id,
     statement,
     answer,
@@ -1115,6 +1116,8 @@ export default function IELTSProcessTrainerFullSystem() {
   const [evidence, setEvidence] = useState({});
 
   const current = processData[processKey];
+  const currentBand55LinkerJudgementTasks =
+    band55LinkerJudgementTasks[processKey] || [];
   const scoreKey = `${processKey}-${level}`;
   const earned = scoreMap[scoreKey] || { p1: false, p2: false, p3: false };
   const totalScore = (earned.p1 ? 2 : 0) + (earned.p2 ? 3 : 0) + (earned.p3 ? 5 : 0);
@@ -1317,6 +1320,7 @@ export default function IELTSProcessTrainerFullSystem() {
     (index) => {
       if (!dragItem) return;
       const value = typeof dragItem === "string" ? dragItem : dragItem.value;
+      if (!value) return;
       setPracticeState((prev) => {
         const copy = [...prev.p2ParagraphAnswers];
         copy[index] = value;
@@ -1326,29 +1330,66 @@ export default function IELTSProcessTrainerFullSystem() {
     [dragItem],
   );
 
+  const returnBlankToBox = useCallback(() => {
+    if (!dragItem || dragItem.type !== "blank") return;
+    setPracticeState((prev) => {
+      const copy = [...prev.p2ParagraphAnswers];
+      copy[dragItem.index] = "";
+      return { ...prev, p2ParagraphAnswers: copy };
+    });
+    setDragItem(null);
+  }, [dragItem]);
+
   const checkParagraph = useCallback(() => {
     const feedback = current.p2Band55.answers.map((answer, i) => practiceState.p2ParagraphAnswers[i] === answer);
     setPracticeState((prev) => ({ ...prev, p2ParagraphFeedback: feedback }));
-    const judgementTasks = linkerJudgementTasks[processKey] || [];
+    const paragraphCorrect = feedback.length > 0 && feedback.every(Boolean);
+    const judgementTasks = band55LinkerJudgementTasks[processKey] || [];
     const judgementCorrect =
-      practiceState.p2LinkerJudgementChecked &&
-      judgementTasks.every((task) => practiceState.p2LinkerJudgementAnswers[task.id] === task.answer);
-    if (feedback.every(Boolean) && judgementCorrect) award("p2");
-  }, [award, current.p2Band55.answers, practiceState.p2LinkerJudgementAnswers, practiceState.p2LinkerJudgementChecked, practiceState.p2ParagraphAnswers, processKey]);
+      level !== "band55" ||
+      (practiceState.p2LinkerJudgementChecked &&
+        judgementTasks.every((task) => {
+          const selected = practiceState.p2LinkerJudgementAnswers?.[task.id];
+          return selected === task.answer;
+        }));
+    if (paragraphCorrect && judgementCorrect) award("p2");
+  }, [
+    award,
+    current,
+    level,
+    practiceState.p2LinkerJudgementAnswers,
+    practiceState.p2LinkerJudgementChecked,
+    practiceState.p2ParagraphAnswers,
+    processKey,
+  ]);
 
   const checkP2LinkerJudgement = useCallback(() => {
-    const tasks = linkerJudgementTasks[processKey] || [];
+    const tasks = band55LinkerJudgementTasks[processKey] || [];
     const feedback = {};
     tasks.forEach((task) => {
-      feedback[task.id] = practiceState.p2LinkerJudgementAnswers[task.id] === task.answer;
+      const selected = practiceState.p2LinkerJudgementAnswers?.[task.id];
+      feedback[task.id] = selected === task.answer;
     });
+    const judgementCorrect = tasks.every((task) => {
+      const selected = practiceState.p2LinkerJudgementAnswers?.[task.id];
+      return selected === task.answer;
+    });
+    const paragraphCorrect =
+      practiceState.p2ParagraphFeedback.length > 0 &&
+      practiceState.p2ParagraphFeedback.every(Boolean);
     setPracticeState((prev) => ({
       ...prev,
       p2LinkerJudgementFeedback: feedback,
       p2LinkerJudgementChecked: true,
     }));
-    if (Object.values(feedback).every(Boolean) && practiceState.p2ParagraphFeedback.every(Boolean)) award("p2");
-  }, [award, practiceState.p2LinkerJudgementAnswers, practiceState.p2ParagraphFeedback, processKey]);
+    if (level === "band55" && paragraphCorrect && judgementCorrect) award("p2");
+  }, [
+    award,
+    level,
+    practiceState.p2LinkerJudgementAnswers,
+    practiceState.p2ParagraphFeedback,
+    processKey,
+  ]);
 
   const getCohesionTasks = useCallback(() => {
     return level === "band6" ? current.p2Band6 : current.p2Band65;
@@ -1856,105 +1897,274 @@ export default function IELTSProcessTrainerFullSystem() {
   const renderBlank = (index) => {
     const checked = practiceState.p2ParagraphFeedback.length > 0;
     const ok = practiceState.p2ParagraphFeedback[index];
+    const currentAnswer = practiceState.p2ParagraphAnswers[index] || "";
     return (
       <span
-        draggable={Boolean(practiceState.p2ParagraphAnswers[index])}
-        onDragStart={() => setDragItem({ type: "blank", index, value: practiceState.p2ParagraphAnswers[index] })}
+        draggable={Boolean(currentAnswer)}
+        onDragStart={() =>
+          currentAnswer &&
+          setDragItem({ type: "blank", index, value: currentAnswer })
+        }
         onDragOver={(e) => e.preventDefault()}
         onDrop={() => dropToBlank(index)}
+        role="textbox"
+        aria-label={`Blank ${index + 1} for linker word`}
+        aria-readonly="true"
         className={`mx-1 inline-flex min-h-[28px] min-w-[105px] items-center justify-center rounded border-b-2 px-2 text-center align-middle ${
           checked ? (ok ? "border-green-500 bg-green-50 text-green-700" : "border-red-500 bg-red-50 text-red-700") : "border-slate-600 bg-white"
-        }`}
+        } ${currentAnswer ? "cursor-grab" : ""}`}
       >
-        {practiceState.p2ParagraphAnswers[index] || "\u00A0"}
+        {currentAnswer || "\u00A0"}
       </span>
+    );
+  };
+
+  const renderBand55Paragraph = () => (
+    <p className="leading-10">
+      {current.p2Band55.text.map((chunk, i) => (
+        <span key={i}>
+          {renderBlank(chunk[0])}
+          {chunk[1]}
+        </span>
+      ))}
+    </p>
+  );
+
+  const renderBand55Practice2 = () => {
+    return (
+      <Card title="Practice 2 - COHESIVE DEVICES">
+        <p className="mb-4 text-sm text-slate-600">
+          Complete Practice 2 to earn 3 points. Part A asks you to drag cohesive
+          devices into the process paragraph. Part B asks you to judge whether
+          the linker sentences are correct.
+        </p>
+        <div className="rounded-2xl border bg-white p-4">
+          <div className="mb-4 rounded-xl bg-slate-50 p-3">
+            <p className="font-bold text-slate-800">
+              Part A - Drag Cohesive Devices
+            </p>
+            <p className="mt-1 text-sm text-slate-600">
+              In the text below some words are missing. Drag words from the box
+              below to the appropriate place in the text. To undo an answer
+              choice, drag the word back to the box below the text.
+            </p>
+          </div>
+          <div className="rounded-2xl border bg-slate-50 p-5">
+            {renderBand55Paragraph()}
+          </div>
+          <div
+            className="mt-4 flex flex-wrap gap-2 rounded-2xl border bg-white p-4"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={returnBlankToBox}
+          >
+            {linkerOptions.map((option) => (
+              <div
+                key={option}
+                draggable
+                onDragStart={() =>
+                  setDragItem({ type: "option", value: option })
+                }
+                role="button"
+                tabIndex={0}
+                className="cursor-grab rounded-xl border bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700"
+              >
+                {option}
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => getP2Hint()}
+              className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+            >
+              Hint
+            </button>
+            <button
+              type="button"
+              onClick={checkParagraph}
+              className="rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white"
+            >
+              Check Drag Task
+            </button>
+            <button
+              type="button"
+              onClick={resetAllPracticeStates}
+              className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+            >
+              Reset
+            </button>
+          </div>
+          {p2Hint.text && (
+            <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+              {p2Hint.text}
+            </div>
+          )}
+          {practiceState.p2ParagraphFeedback.length > 0 && (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 md:grid-cols-4">
+              {practiceState.p2ParagraphFeedback.map((ok, i) => (
+                <div
+                  key={i}
+                  className={`rounded-xl border p-3 text-sm ${
+                    ok
+                      ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-700"
+                  }`}
+                >
+                  Blank {i + 1}: {ok ? "Correct" : "Check again"}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="mt-5 rounded-2xl border bg-white p-4">
+          <div className="mb-4 rounded-xl bg-slate-50 p-3">
+            <p className="font-bold text-slate-800">
+              Part B - Linker Position Check
+            </p>
+            <p className="mt-1 text-sm text-slate-600">
+              Decide whether each sentence is correct. Focus on linker position,
+              "then", "After that", and the difference between "In the next
+              stage, ..." and "The next stage is to...".
+            </p>
+          </div>
+          <div className="space-y-3 text-sm text-slate-800">
+            {currentBand55LinkerJudgementTasks.map((task, index) => {
+              const selected =
+                practiceState.p2LinkerJudgementAnswers?.[task.id];
+              const feedback =
+                practiceState.p2LinkerJudgementFeedback?.[task.id];
+              const showHint =
+                practiceState.p2LinkerJudgementHint === task.id;
+              return (
+                <div
+                  key={task.id}
+                  className={`rounded-xl border p-3 ${
+                    feedback === undefined
+                      ? "bg-slate-50"
+                      : feedback
+                        ? "border-green-300 bg-green-50 text-green-800"
+                        : "border-red-300 bg-red-50 text-red-800"
+                  }`}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Statement {index + 1}
+                  </p>
+                  <p className="mt-1 rounded-lg bg-white p-3">
+                    {task.statement}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPracticeState((prev) => ({
+                          ...prev,
+                          p2LinkerJudgementAnswers: {
+                            ...prev.p2LinkerJudgementAnswers,
+                            [task.id]: true,
+                          },
+                          p2LinkerJudgementChecked: false,
+                          p2LinkerJudgementFeedback: null,
+                        }))
+                      }
+                      className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                        selected === true
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "bg-white text-slate-700"
+                      }`}
+                    >
+                      True
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPracticeState((prev) => ({
+                          ...prev,
+                          p2LinkerJudgementAnswers: {
+                            ...prev.p2LinkerJudgementAnswers,
+                            [task.id]: false,
+                          },
+                          p2LinkerJudgementChecked: false,
+                          p2LinkerJudgementFeedback: null,
+                        }))
+                      }
+                      className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                        selected === false
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "bg-white text-slate-700"
+                      }`}
+                    >
+                      False
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPracticeState((prev) => ({
+                          ...prev,
+                          p2LinkerJudgementHint:
+                            prev.p2LinkerJudgementHint === task.id
+                              ? null
+                              : task.id,
+                        }))
+                      }
+                      className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold"
+                    >
+                      Hint
+                    </button>
+                  </div>
+                  {showHint && (
+                    <div className="mt-2 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
+                      {task.hint}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-4 flex gap-2">
+            <button
+              type="button"
+              onClick={checkP2LinkerJudgement}
+              className="rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white"
+            >
+              Check Linker Position
+            </button>
+          </div>
+          {practiceState.p2LinkerJudgementChecked && (
+            <div
+              className={`mt-3 rounded-xl p-3 text-sm ${
+                currentBand55LinkerJudgementTasks.every((task) => {
+                  const selected =
+                    practiceState.p2LinkerJudgementAnswers?.[task.id];
+                  return selected === task.answer;
+                })
+                  ? "bg-green-50 text-green-700"
+                  : "bg-red-50 text-red-700"
+              }`}
+            >
+              {currentBand55LinkerJudgementTasks.every((task) => {
+                const selected =
+                  practiceState.p2LinkerJudgementAnswers?.[task.id];
+                return selected === task.answer;
+              })
+                ? "Correct. You understand the basic positions and structures of process linkers."
+                : "Check again. Use the hints to review linker position and 'is to + verb'."}
+            </div>
+          )}
+          {!earned.p2 && (
+            <p className="mt-3 text-xs text-slate-600">
+              To earn 3 points for Practice 2, complete both Part A and Part B
+              correctly.
+            </p>
+          )}
+        </div>
+      </Card>
     );
   };
 
   const renderPractice2 = () => {
     if (level === "band55") {
-      return (
-        <Card title="Practice 2 - Cohesive Devices">
-          <p className="mb-4 text-sm text-slate-600">Drag cohesive devices into the process paragraph, then check linker positions.</p>
-          <div className="rounded-2xl border bg-slate-50 p-5 leading-10">
-            {current.p2Band55.text.map((chunk, i) => (
-              <span key={i}>{renderBlank(chunk[0])}{chunk[1]}</span>
-            ))}
-          </div>
-          <div
-            className="mt-4 flex flex-wrap gap-2 rounded-2xl border bg-white p-4"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-              if (dragItem?.type !== "blank") return;
-              setPracticeState((prev) => {
-                const copy = [...prev.p2ParagraphAnswers];
-                copy[dragItem.index] = "";
-                return { ...prev, p2ParagraphAnswers: copy };
-              });
-            }}
-          >
-            {linkerOptions.map((option) => (
-              <button
-                key={option}
-                type="button"
-                draggable
-                onClick={() => {
-                  const firstEmpty = current.p2Band55.answers.findIndex((_, i) => !practiceState.p2ParagraphAnswers[i]);
-                  if (firstEmpty >= 0) {
-                    setPracticeState((prev) => {
-                      const copy = [...prev.p2ParagraphAnswers];
-                      copy[firstEmpty] = option;
-                      return { ...prev, p2ParagraphAnswers: copy };
-                    });
-                  }
-                }}
-                onDragStart={() => setDragItem({ type: "option", value: option })}
-                className="cursor-grab rounded-xl border bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-700"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button type="button" onClick={() => setP2Hint({ index: null, text: "Look at the position of the blank: sentence beginning, after a be-verb, after 'After', or inside 'In the ___ stage'." })} className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold">Hint</button>
-            <button type="button" onClick={checkParagraph} className="rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white">Check Drag Task</button>
-            <button type="button" onClick={resetAllPracticeStates} className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold">Reset</button>
-          </div>
-          {p2Hint.text && <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">{p2Hint.text}</div>}
-
-          <div className="mt-5 rounded-2xl border bg-white p-4">
-            <p className="font-bold text-slate-800">Linker Position Check</p>
-            <div className="mt-3 space-y-3">
-              {(linkerJudgementTasks[processKey] || []).map((task) => (
-                <div key={task.id} className="rounded-xl border bg-slate-50 p-3">
-                  <p className="rounded-lg bg-white p-3">{task.statement}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {[true, false].map((value) => (
-                      <button
-                        key={String(value)}
-                        type="button"
-                        onClick={() =>
-                          setPracticeState((prev) => ({
-                            ...prev,
-                            p2LinkerJudgementAnswers: { ...prev.p2LinkerJudgementAnswers, [task.id]: value },
-                          }))
-                        }
-                        className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
-                          practiceState.p2LinkerJudgementAnswers[task.id] === value ? "border-blue-500 bg-blue-50 text-blue-700" : "bg-white"
-                        }`}
-                      >
-                        {value ? "True" : "False"}
-                      </button>
-                    ))}
-                    <button type="button" onClick={() => setP2Hint({ index: null, text: task.hint })} className="rounded-xl border bg-white px-3 py-2 text-sm font-semibold">Hint</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button type="button" onClick={checkP2LinkerJudgement} className="mt-4 rounded-xl bg-green-600 px-3 py-2 text-sm font-semibold text-white">Check Linker Position</button>
-          </div>
-        </Card>
-      );
+      return renderBand55Practice2();
     }
 
     const tasks = getCohesionTasks();
