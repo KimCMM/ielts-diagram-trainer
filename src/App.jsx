@@ -92,8 +92,7 @@ const processData = {
   bamboo: {
     title: "Bamboo Fabric",
     task: "The diagram below shows how fabric is manufactured from bamboo.",
-    image:
-      "https://i0.wp.com/ieltspracticeonline.com/wp-content/uploads/2025/07/Writing-Task-1-BHow-fabric-is-manufactured-from-bamboo.png",
+    image: "/images/bamboo-fabric.png",
     video: "/videos/bamboo-fabric.mp4",
     steps: [
       ["People plant bamboo plants in spring.", "Bamboo plants are planted in spring.", "bamboo plants / plant / spring"],
@@ -122,8 +121,7 @@ const processData = {
   sugar: {
     title: "Sugar Canes",
     task: "The diagram below shows how sugar is produced from sugar canes.",
-    image:
-      "https://daxue-oss.koocdn.com/upload/ti/sardine/2521000-2522000/2521817/3395c3236ee34b9089e15f2ce4dfc9a9.png",
+    image: "/images/sugar-cane.png",
     video: "/videos/sugar-canes.mp4",
     steps: [
       ["Farmers grow sugar canes for 12-18 months.", "Sugar canes are grown for 12-18 months.", "sugar canes / grow / 12-18 months"],
@@ -150,8 +148,7 @@ const processData = {
   noodles: {
     title: "Instant Noodles",
     task: "The diagram below shows the manufacturing process for instant noodles.",
-    image:
-      "https://daxue-oss.koocdn.com/upload/ti/sardine/2493000-2494000/2493115/259d8b9f612e40819d37e0fb928b572f.png",
+    image: "/images/instant-noodles.png",
     video: "/videos/instant-noodles.mp4",
     steps: [
       ["A truck transports flour from storage silos.", "Flour is transported from storage silos by truck.", "flour / transport / storage silos / truck"],
@@ -179,7 +176,7 @@ const processData = {
   recycling: {
     title: "Plastic Bottle Recycling",
     task: "The diagram below shows the process for recycling plastic bottles.",
-    image: "https://images.writing9.com/646839d3f987923ffa686b743b1950f9.png",
+    image: "/images/plastic-bottle-recycling.png",
     video: "/videos/plastic-bottle-recycling.mp4",
     steps: [
       ["People put plastic bottles in recycling bins.", "Plastic bottles are placed in recycling bins.", "plastic bottles / place / recycling bins"],
