@@ -94,6 +94,7 @@ const processData = {
     task: "The diagram below shows how fabric is manufactured from bamboo.",
     image:
       "https://i0.wp.com/ieltspracticeonline.com/wp-content/uploads/2025/07/Writing-Task-1-BHow-fabric-is-manufactured-from-bamboo.png",
+    video: "/videos/bamboo-fabric.mp4",
     steps: [
       ["People plant bamboo plants in spring.", "Bamboo plants are planted in spring.", "bamboo plants / plant / spring"],
       ["People harvest bamboo plants in autumn.", "Bamboo plants are harvested in autumn.", "bamboo plants / harvest / autumn"],
@@ -123,6 +124,7 @@ const processData = {
     task: "The diagram below shows how sugar is produced from sugar canes.",
     image:
       "https://daxue-oss.koocdn.com/upload/ti/sardine/2521000-2522000/2521817/3395c3236ee34b9089e15f2ce4dfc9a9.png",
+    video: "/videos/sugar-canes.mp4",
     steps: [
       ["Farmers grow sugar canes for 12-18 months.", "Sugar canes are grown for 12-18 months.", "sugar canes / grow / 12-18 months"],
       ["Workers or machines harvest the sugar canes.", "The sugar canes are harvested by workers or machines.", "sugar canes / harvest / workers or machines"],
@@ -150,6 +152,7 @@ const processData = {
     task: "The diagram below shows the manufacturing process for instant noodles.",
     image:
       "https://daxue-oss.koocdn.com/upload/ti/sardine/2493000-2494000/2493115/259d8b9f612e40819d37e0fb928b572f.png",
+    video: "/videos/instant-noodles.mp4",
     steps: [
       ["A truck transports flour from storage silos.", "Flour is transported from storage silos by truck.", "flour / transport / storage silos / truck"],
       ["Workers mix flour with water and oil in a mixer.", "Flour is mixed with water and oil in a mixer.", "flour / mix / water and oil / mixer"],
@@ -177,6 +180,7 @@ const processData = {
     title: "Plastic Bottle Recycling",
     task: "The diagram below shows the process for recycling plastic bottles.",
     image: "https://images.writing9.com/646839d3f987923ffa686b743b1950f9.png",
+    video: "/videos/plastic-bottle-recycling.mp4",
     steps: [
       ["People put plastic bottles in recycling bins.", "Plastic bottles are placed in recycling bins.", "plastic bottles / place / recycling bins"],
       ["A truck collects and transports plastic bottles.", "Plastic bottles are collected and transported by truck.", "plastic bottles / collect and transport / truck"],
@@ -1106,6 +1110,8 @@ export default function IELTSProcessTrainerFullSystem() {
   const [dragItem, setDragItem] = useState(null);
   const [p1Hint, setP1Hint] = useState({ index: null, text: "" });
   const [p2Hint, setP2Hint] = useState({ index: null, text: "" });
+  const [videoStarted, setVideoStarted] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
   const [writingHint, setWritingHint] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiFeedback, setAiFeedback] = useState(null);
@@ -1165,6 +1171,8 @@ export default function IELTSProcessTrainerFullSystem() {
     setPracticeState(initialPracticeState);
     setP1Hint({ index: null, text: "" });
     setP2Hint({ index: null, text: "" });
+    setVideoStarted(false);
+    setVideoEnded(false);
     setWritingHint("");
     setAiFeedback(null);
     setAiLoading(false);
@@ -3013,6 +3021,53 @@ export default function IELTSProcessTrainerFullSystem() {
     );
   };
 
+  const renderAnimationLeadIn = () => {
+    if (!videoEnded) {
+      return (
+        <Card title="Animation Lead-in">
+          <p className="mb-4 text-sm text-slate-600">
+            Watch the process animation first. The process diagram will appear
+            after the video finishes.
+          </p>
+          <div className="overflow-hidden rounded-2xl border bg-black">
+            <video
+              className="w-full"
+              controls
+              preload="metadata"
+              onPlay={() => setVideoStarted(true)}
+              onEnded={() => setVideoEnded(true)}
+            >
+              <source src={current.video} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          {!videoStarted && (
+            <p className="mt-3 text-sm text-slate-500">
+              Click the video to start watching.
+            </p>
+          )}
+        </Card>
+      );
+    }
+
+    return (
+      <Card title={current.title}>
+        <p className="text-sm text-slate-600">{current.task}</p>
+        <div className="mt-4 overflow-hidden rounded-2xl border bg-white">
+          <img
+            src={current.image}
+            alt={`${current.title} process diagram`}
+            className="max-h-[520px] w-full object-contain"
+          />
+        </div>
+        <div className="mt-4 rounded-2xl border bg-green-50 p-4 text-sm text-green-700">
+          Animation completed. You can now use the process diagram to complete
+          the practice tasks.
+        </div>
+      </Card>
+    );
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 p-4 text-slate-900 md:p-8">
       <div className="mx-auto max-w-6xl space-y-6">
@@ -3073,25 +3128,27 @@ export default function IELTSProcessTrainerFullSystem() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-          <Card title={current.title}>
-            <p className="text-sm text-slate-600">{current.task}</p>
-            <div className="mt-4 overflow-hidden rounded-2xl border bg-white">
-              <img src={current.image} alt={`${current.title} process diagram`} className="max-h-[520px] w-full object-contain" />
-            </div>
-            <div className="mt-4 rounded-2xl border bg-slate-50 p-4 text-sm text-slate-700">
-              <p className="font-semibold">How to use this practice</p>
-              <p className="mt-1">Practice 1 builds sentence accuracy. Practice 2 trains cohesive devices and sentence combining. Practice 3 asks you to write a body paragraph and revise it through self-check and AI Check.</p>
-            </div>
-          </Card>
+          {renderAnimationLeadIn()}
           <div className="space-y-4">
-            <div role="tablist" aria-label="Practice tabs" className="flex flex-wrap gap-2 rounded-2xl border bg-white p-3 shadow-sm">
-              <Tab value="practice1" label="Practice 1" activePractice={activePractice} onSelect={setActivePractice} />
-              <Tab value="practice2" label="Practice 2" activePractice={activePractice} onSelect={setActivePractice} />
-              <Tab value="practice3" label="Practice 3" activePractice={activePractice} onSelect={setActivePractice} />
-            </div>
-            {activePractice === "practice1" && renderPractice1()}
-            {activePractice === "practice2" && renderPractice2()}
-            {activePractice === "practice3" && renderPractice3()}
+            {!videoEnded ? (
+              <Card title="Practice locked">
+                <p className="text-sm text-slate-600">
+                  Please watch the animation first. The practice tasks will be
+                  unlocked after the video finishes.
+                </p>
+              </Card>
+            ) : (
+              <>
+                <div role="tablist" aria-label="Practice tabs" className="flex flex-wrap gap-2 rounded-2xl border bg-white p-3 shadow-sm">
+                  <Tab value="practice1" label="Practice 1" activePractice={activePractice} onSelect={setActivePractice} />
+                  <Tab value="practice2" label="Practice 2" activePractice={activePractice} onSelect={setActivePractice} />
+                  <Tab value="practice3" label="Practice 3" activePractice={activePractice} onSelect={setActivePractice} />
+                </div>
+                {activePractice === "practice1" && renderPractice1()}
+                {activePractice === "practice2" && renderPractice2()}
+                {activePractice === "practice3" && renderPractice3()}
+              </>
+            )}
           </div>
         </section>
       </div>
